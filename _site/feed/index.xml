@@ -4,7 +4,7 @@
  <title>TJ Stein</title>
  <link href="http://tjstein.com/feed/" rel="self"/>
  <link href="http://tjstein.com/"/>
- <updated>2012-10-06T00:48:44-03:00</updated>
+ <updated>2013-06-22T13:05:12-03:00</updated>
  <id>http://tjstein.com/</id>
  <author>
    <name>TJ Stein</name>
@@ -13,10 +13,56 @@
 
  
  <entry>
+   <title>/etc/init.d/teste start</title>
+   <link href="http://tjstein.com/2013/06/teste"/>
+   <updated>2013-06-22T00:00:00-03:00</updated>
+   <id>http://tjstein.com/2013/06/teste</id>
+   <content type="html">&lt;p&gt;Hoje, dia 05/10/2012, recebi na serrinha meus amigos Ricardo Davanço e Luciano Borguetti, com o objetivo de estudar novas tecnologias e desenolver um projeto para disseminar o conhecimento dentro do grupo. Não estavam todos presentes, faltaram peças importantes, atualmente somos um grupo bem heterogeneo, alguns são programadores Java, outros são programadores C/C++, e também sysadmin.
+O inicio não foi como desejavamos, como disse antes, faltaram pessoas muito importantes, porém foi um inicio de uma grande iniciativa que é deixar um grupo bem treinado em várias tecnologias, como: Arduino, C/C++, Java, Python, Ruby, entre outros.&lt;/p&gt;
+
+&lt;p&gt;&lt;img title=&quot;Grupo de Estudos!&quot; src=&quot;/images/hackerspace1.jpg&quot; alt=&quot;Primeiro encontro do grupo de estudos!&quot; width=&quot;469&quot; height=&quot;352&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Na ordem da esquerda para direita: Paulo Leonardo Benatto (com arguile), Ricardo Danvanço e Luciano Borguetti. Não desenvolvemos nenhum software importante, porém conversamos bastante sobre tecnologias, e possiveis projetos.&lt;/p&gt;
+
+&lt;p&gt;&lt;img title=&quot;Grupo de Estudos!&quot; src=&quot;/images/hackerspace2.jpg&quot; alt=&quot;Primeiro encontro do grupo de estudos!&quot; width=&quot;469&quot; height=&quot;352&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Luciano Borguetti, com o &lt;em&gt;Tux&lt;/em&gt; bebendo cerveja, o Ricardo Davanço (Tiozão) e Paulo Benatto (patito/vesgo), hackerspace com muita troca de conhecimento e ideias. Só tenho uma coisa a dizer para quem não veio, PERDEU.&lt;/p&gt;
+
+&lt;center&gt;&lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;http://www.youtube.com/embed/8i22Ric0AaI&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
+
+
+&lt;p&gt;Video da galera desenvolvendo software e FOCAndo no código. Reforço o que eu disse antes, quem não veio PERDEU.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>/etc/init.d/teste start</title>
+   <link href="http://tjstein.com/2013/06/teste2"/>
+   <updated>2013-06-10T00:00:00-03:00</updated>
+   <id>http://tjstein.com/2013/06/teste2</id>
+   <content type="html">&lt;p&gt;Hoje, dia 05/10/2012, recebi na serrinha meus amigos Ricardo Davanço e Luciano Borguetti, com o objetivo de estudar novas tecnologias e desenolver um projeto para disseminar o conhecimento dentro do grupo. Não estavam todos presentes, faltaram peças importantes, atualmente somos um grupo bem heterogeneo, alguns são programadores Java, outros são programadores C/C++, e também sysadmin.
+O inicio não foi como desejavamos, como disse antes, faltaram pessoas muito importantes, porém foi um inicio de uma grande iniciativa que é deixar um grupo bem treinado em várias tecnologias, como: Arduino, C/C++, Java, Python, Ruby, entre outros.&lt;/p&gt;
+
+&lt;p&gt;&lt;img title=&quot;Grupo de Estudos!&quot; src=&quot;/images/hackerspace1.jpg&quot; alt=&quot;Primeiro encontro do grupo de estudos!&quot; width=&quot;469&quot; height=&quot;352&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Na ordem da esquerda para direita: Paulo Leonardo Benatto (com arguile), Ricardo Danvanço e Luciano Borguetti. Não desenvolvemos nenhum software importante, porém conversamos bastante sobre tecnologias, e possiveis projetos.&lt;/p&gt;
+
+&lt;p&gt;&lt;img title=&quot;Grupo de Estudos!&quot; src=&quot;/images/hackerspace2.jpg&quot; alt=&quot;Primeiro encontro do grupo de estudos!&quot; width=&quot;469&quot; height=&quot;352&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Luciano Borguetti, com o &lt;em&gt;Tux&lt;/em&gt; bebendo cerveja, o Ricardo Davanço (Tiozão) e Paulo Benatto (patito/vesgo), hackerspace com muita troca de conhecimento e ideias. Só tenho uma coisa a dizer para quem não veio, PERDEU.&lt;/p&gt;
+
+&lt;center&gt;&lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;http://www.youtube.com/embed/8i22Ric0AaI&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
+
+
+&lt;p&gt;Video da galera desenvolvendo software e FOCAndo no código. Reforço o que eu disse antes, quem não veio PERDEU.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
    <title>/etc/init.d/hackerbeer start</title>
-   <link href="http://tjstein.com/2012/10/hello-world"/>
+   <link href="http://tjstein.com/2012/10/hackerbeer"/>
    <updated>2012-10-05T00:00:00-03:00</updated>
-   <id>http://tjstein.com/2012/10/hello-world</id>
+   <id>http://tjstein.com/2012/10/hackerbeer</id>
    <content type="html">&lt;p&gt;Hoje, dia 05/10/2012, recebi na serrinha meus amigos Ricardo Davanço e Luciano Borguetti, com o objetivo de estudar novas tecnologias e desenolver um projeto para disseminar o conhecimento dentro do grupo. Não estavam todos presentes, faltaram peças importantes, atualmente somos um grupo bem heterogeneo, alguns são programadores Java, outros são programadores C/C++, e também sysadmin.
 O inicio não foi como desejavamos, como disse antes, faltaram pessoas muito importantes, porém foi um inicio de uma grande iniciativa que é deixar um grupo bem treinado em várias tecnologias, como: Arduino, C/C++, Java, Python, Ruby, entre outros.&lt;/p&gt;
 

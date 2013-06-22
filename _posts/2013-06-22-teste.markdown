@@ -1,7 +1,7 @@
 ---
 layout: post
-title: /etc/init.d/hackerbeer start
-except: 
+title: /etc/init.d/teste start
+except:
 comments: false
 ---
 

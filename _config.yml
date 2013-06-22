@@ -1,14 +1,13 @@
-title: "Paulo Leonardo Benatto [patito]"
+title: "maleficus"
 #url: "patito.github.com"
-author: "Paulo Leonardo Benatto"
-email: "benatto@gmail.com"
-description: "Blog pessoal de Paulo Leonardo Benatto (patito)."
+author: "malelficus project"
+email: "maleficus@gmail.com"
+description: "Documentation of malelficus projetc."
 
-auto: false
 source: .
 paginate: 5
 paginate_files:
- - index.html
+  - index.html
 
 permalink: /:year/:month/:title
 

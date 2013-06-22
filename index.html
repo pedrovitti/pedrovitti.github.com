@@ -2,10 +2,10 @@
 layout: default
 title: Home
 ---
-
+total_posts = {{ total_posts }}
 {% for post in paginator.posts %}
   <article class="post">
-
+teste dentro do for
     <h3><a href="{{ site.url }}{{ post.url }}" rel="bookmark permalink" title="Permanent link to this post">{{ post.title }}</a></h3>
 
     {{ post.content }}
@@ -33,6 +33,6 @@ title: Home
 {% if paginator.next_page %}
   <a href='/page{{paginator.next_page}}' class='older'><h1>Older Posts</h1></a>
 {% endif %}
-  
+
   <div class='clear'></div>
 </div>
