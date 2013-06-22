@@ -1,0 +1,1017 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Documentation | malelficus</title>
+  <meta name="description" content="Documentation of malelficus projetc." />
+  <meta name="author" content="malelficus project" />
+  <meta name="robots" content="index, follow" />
+  <meta name="viewport" content="user-scalable=no,width=device-width" />
+  <meta name="keywords" content="Paulo L. Benatto" />
+  <meta name="copyright" content="Copyright 2008 to Present"/>
+  <meta name="google-site-verification" content="XUkxAz2T7iH7BfeNCKk88xUnTqNHjnMirb4GQv196GA" />
+  <link href="/feed" rel="alternate" title="TJ Stein's RSS feed" type="application/rss+xml" />
+  <link href="http://patito.github.com" rel="home" />
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link type="text/css" rel="stylesheet" media="screen, projection" href="/css/screen.css" /> 
+  <link type="text/css" rel="stylesheet" media="all" href="/css/custom.css" />
+  <!--[if lt IE 8]>
+    <link type="text/css" rel="stylesheet" media="screen, projection" href="/css/ie.css" />
+  <![endif]--> 
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <script>
+  // Preload font files and finally patch CSS with custom fonts.
+  // We do this to avoid displaying unreadable text while waiting for data.
+  function finalizer() {
+    var n = document.createElement('link');
+    n.href = '/css/screen.css';
+    n.media = 'screen, projection';
+    n.rel = 'stylesheet';
+    n.type = 'text/css';
+    document.getElementsByTagName('head').item(0).appendChild(n);
+  }
+  var countdown = 1;
+  function fetch(url) {
+    try {
+      var req = new XMLHttpRequest();
+      req.open('GET', url, true);
+      req.onreadystatechange = function () { if (req.readyState == 4) {
+        if (--countdown === 0)
+          finalizer()
+      }};
+      req.send();
+    } catch (e) {}
+  }
+  fetch('http://tjstein.com/fonts/DroidSans-webfont.woff');
+  fetch('http://tjstein.com/fonts/DroidSans-webfont.ttf');
+  fetch('http://tjstein.com/fonts/YanoneKaffeesatz-Regular-webfont.woff');
+  fetch('http://tjstein.com/fonts/YanoneKaffeesatz-Regular-webfont.ttf');
+  if (--countdown === 0) finalizer();
+  </script>
+
+  <script>var _gaq=[['_setAccount','UA-9191070-10'],['_trackPageview']];(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;g.src='//patito.github.com/js/ga.js';s.parentNode.insertBefore(g,s)})(document,'script')</script>
+	
+</head>
+  <body>
+    <div class="container">
+      <header class="span-21 last" id="header">
+        <h1><a href="" rel="home bookmark">malelficus</a></h1>
+      </header>
+
+      <div class="span-16" id="content">
+        <article class="post">
+
+  <h2>Documentation</h2>
+
+  <hr />
+
+<h1>1 - Introdução</h1>
+
+<p>  O projeto malELFicus começou a ser desenvolvido em 2011 por Tiago Natel de
+Moura com o objetivo de estudar o formato ELF (Executable and Linkable Format) e
+disseminar o conhecimento de desenvolvimento e análise de malwares para Linux no
+cenário nacional.
+  Atualmente o projeto esta passando por um refactoring para corrigir bugs
+antigos, adicionar bugs novos e mudar um pouco de sua arquitetura inicial.
+  Basicamente o projeto malelficus está dividido em 3 partes: libmalelf, malelf
+e malelfgui. Cada um desses projetos é apresentado separadamente, de forma
+detalhada, ao logo do documento.</p>
+
+<p>  O repositório do projeto está no github e pode ser acessado através dos
+links:</p>
+
+<ul>
+<li>https://github.com/SecPlus/libmalelf</li>
+<li>https://github.com/SecPlus/malelf</li>
+<li>https://github.com/SecPlus/malelfgui</li>
+<li>https://github.com/SecPlus/malelficus</li>
+</ul>
+
+
+<p>Você nesse momento deve estar se perguntando para que serve o repositório
+malelficus, já que todos os projetos são separados? O Malelficus é o
+agregador, ele linka e faz build dos outros três projetos.</p>
+
+<hr />
+
+<h2>1.1 - O que são arquivos ELF?</h2>
+
+<p>  O objetivo desse documento não é ensinar o formato ELF, e sim apresentar o
+projeto malELFicus. Por isso, deduzimos que o leitor tenha conhecimento prévio
+sobre ELF para ler esse documento.
+  Entretanto, retiramos uma parte do documento DissecandoELF.txt (escrito por
+Felipe Pena (sigsegv) e publicado na Cogumelo Binário 1) explicando o que são
+arquivos ELF para dar uma visão geral.</p>
+
+<p>  O ELF (Executable and Linking Format) nada mais é do que um formato padrão de
+arquivo executável, código objeto, objeto compartilhado, e core dumps. Em 1999
+ele foi adotado como formato de arquivo binário para Unix e unix-like em x86 pe-
+lo projeto 86open. [1] Sua primeira aparição foi no Solaris 2.0 (o conhecido
+SunOS 5.0), que é baseado no SVR4. [2]</p>
+
+<p>  Para maiores informações verificar os Links no final do documento.</p>
+
+<hr />
+
+<h1>2 - Libmalelf</h1>
+
+<p>  "The libmalelf is an evil library that could be used for good! It was
+developed with the intent to assist in the process of infecting binaries and
+provide a safe way to analyze malwares".</p>
+
+<p>  Resumindo, a libmalelf, fornece uma maneira rápida e fácil para programadores
+desenvolverem suas próprias ferramentas de análise e infecção de binários ELF.</p>
+
+<p>  Com a libmalelf o programador poderá:</p>
+
+<ul>
+<li>Analisar e infectar binários ELF;</li>
+<li>Adicionar segmentos/seções e headers ao binário;</li>
+<li>Modificar qualquer informação do ELF;</li>
+<li>Encontrar holes/gaps para inserir no código;</li>
+<li><p>Criar binários do zero;</p>
+
+<p>Agora que já sabemos o que é a libmalelf, vamos descobrir como ela funciona.</p></li>
+</ul>
+
+
+<hr />
+
+<h2>2.1 Build</h2>
+
+<p>  Para baixar o código fonte é necessário que você tenha o git instalado.</p>
+
+<p>$ git clone https://github.com/SecPlus/libmalelf.git</p>
+
+<p>Dependências:</p>
+
+<ul>
+<li>NASM</li>
+<li>libxml2-dev</li>
+<li><p>libcunit1-dev (opcional)</p>
+
+<p>Caso sua distribuição Linux seja baseada em Debian:</p></li>
+</ul>
+
+
+<p>$ sudo apt-get install nasm libxml2-dev libcunit1-dev</p>
+
+<p>$ ./configure --prefix=/usr --enable-tests
+$ make
+$ make check
+$ sudo make install</p>
+
+<p>  Pronto! Agora você já tem a libmalelf em sua máquina e podemos começar a
+programar.</p>
+
+<hr />
+
+<h2>2.2 Organização</h2>
+
+<p>  Vamos demonstrar como está organizado o código do projeto no github.</p>
+
+<p>libmalelf/
+--+-------
+  |
+  +-- src/
+  |    |-- binary.c
+  |    |-- ehdr.c
+  |    |-- phdr.c
+  |    |-- shdr.c
+  |    |-- debug.c
+  |    |-- report.c
+  |    |-- error.c
+  |    |-- infect.c
+  |    |-- table.c
+  |    |-- util.c
+  |    +-- include/
+  |          |-- malelf/
+  |               |-- HEADERS FILES
+  |
+  +-- examples/
+  |    |-- CODE EXAMPLES
+  |
+  +-- tests/
+       |-- TEST FILES</p>
+
+<p>  Vamos explicar resumidamente a função de cada módulo dentro do projeto.</p>
+
+<ul>
+<li>Módulo binary: responsável por armazenar todas as informações do binário ELF.</li>
+<li>Módulo ehdr: Armazena as informações do ELF Header.</li>
+<li>Módulo phdr: Armazena as informações do Program Header Table.</li>
+<li>Módulo shdr: Armazena as informações do Section Header Table.</li>
+<li>Módulo debug: Implementa a parte de debug da biblioteca.</li>
+<li>Módulo report: Módulo responsável por gerar as informações no formato XML.</li>
+<li>Módulo error: Faz o mapeamento das mensagens de erro.</li>
+<li>Módulo infect: Implementa os métodos de infecção.</li>
+<li>Módulo table: Módulo responsável por gerar as informações na shell.</li>
+<li>Módulo util: Implementações utilitárias.</li>
+</ul>
+
+
+<hr />
+
+<h2>2.3 Módulo Binary</h2>
+
+<p>  O módulo binary é constituido por dois arquivos: binary.c e binary.h. Podemos
+dizer que este é o principal módulo da biblioteca, pois ele é o responsável por
+armazenar todas as informações do binário. Abaixo segue como ele está definido
+dentro da biblioteca.</p>
+
+<p>typedef struct {
+        char <em>fname;         /</em> Binary filename <em>/
+        char </em>bkpfile;       /<em> Filename of backup'ed file in case of
+                                write operations </em>/
+        <em>i32 fd;             /<em> Binary file descriptor </em>/
+        </em>u8 <em>mem;            /</em> Binary content <em>/
+        _u32 size;           /</em> Binary size <em>/
+        MalelfEhdr ehdr;     /</em> ELF Header <em>/
+        MalelfPhdr phdr;     /</em> Elf Program Headers <em>/
+        MalelfShdr shdr;     /</em> Elf Section Headers <em>/
+        _u8 alloc_type;      /</em> System function used to allocate memory <em>/
+        _u32 class;          /</em> Binary arch */
+} MalelfBinary;</p>
+
+<ul>
+<li>fname: Nome do binário que iremos trabalhar. Exemplo: /bin/ls.</li>
+<li>bkpfile: Backup...</li>
+<li>fd: File descriptor;</li>
+<li>mem: Conteúdo do binário;</li>
+<li>size: Tamanho do binário;</li>
+<li>ehdr: Armazena as informações relacionadas ao ELF Header;</li>
+<li>phdr: Armazena as informações relacionadas ao Program Header Table;</li>
+<li>shdr: Armazena as informações relacionadas ao Section Header Table;</li>
+<li>alloc_type: Como a memória será alocada, com mmap ou malloc.</li>
+<li><p>class: Arquitetura do binário;</p>
+
+<p>Os campos ehdr, shdr e phdr serão apresentados de forma mais detalhada ao
+longo do documento.</p>
+
+<p>Para começar a utilizar a libmalelf é necessário que o programador conheça
+alguns métodos básicos.</p>
+
+<p>O método malelf_binary_init() deve ser chamado antes de utilizar qualquer
+outra função da biblioteca. Esse método é responsável por inicializar as
+informações do objeto MalelfBinary.</p>
+
+<p>Para carregar/abrir um binário, existe o método malelf_binary_open(), que por
+default utiliza a função mmap() para carregar o binário na memória. Caso o
+programador deseje utilizar o malloc(), existe uma função chamada
+malelf_binary_set_alloc_type() que pode ser usada passando o parâmetro
+MALELF_ALLOC_MALLOC, como no exemplo abaixo.</p></li>
+</ul>
+
+
+<p>MalelfBinary bin;
+malelf_binary_set_alloc_type(bin, MALELF_ALLOC_MALLOC);</p>
+
+<p>  E, por último, mas não menos importante, o programador deve chamar o
+método malelf_binary_close() passando o objeto MalelfBinary como parametro.</p>
+
+<p>  Demonstrar todas as funcionalidades do módulo binary é uma tarefa dificil,
+até porque o projeto ainda está em desenvolvimento. Demonstramos alguns
+códigos de exemplo a seguir, porém a melhor maneira de conhecer o módulo
+é lendo seu arquivo de header.</p>
+
+<hr />
+
+<h2>2.3.1 - Hello libmalelf</h2>
+
+<p>  Para iniciarmos os exemplos, vamos começar com o maior clichê do mundo da
+programação.</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<p>int main()
+{
+    MalelfBinary bin;
+    malelf_binary_init(&amp;bin);</p>
+
+<pre><code>printf("Hello Libmalelf bin[%p]\n", &amp;bin);
+malelf_binary_close(&amp;bin);
+
+return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>  Agora vamos compilar o nosso exemplo acima.</p>
+
+<p>$ gcc -o hello hello.c -lmalelf -Wall -Wextra -Werror
+$ ./hello
+Hello Libmalelf bin[0xbfbfd8ec]</p>
+
+<p>  Não sei onde a sua libmalelf foi instalada, caso ela não seja encontrada
+lembre-se de exportar a variável LD_LIBRARY_PATH para o diretório correto.</p>
+
+<p>$ export LD_LIBRARY_PATH=/home/benatto/libs/</p>
+
+<hr />
+
+<h2>2.3.2 - Pegando o nome das seções</h2>
+
+<p>  A libmalelf fornece alguns métodos que facilitam o programador pegar uma
+determinada seção, malelf_binary_get_section(), passando o objeto MalelfBinary,
+a posição da seção e o objeto MalelfSection que irá armazenar as informações
+da seção.
+  As informações contidas na seção podem ser acessadas diretamente pelo
+programador, ou através de getters, como no exemplo abaixo, utilizando o método
+malelf_binary_get_section_name(); Abaixo segue o código do objeto MalelfSection
+para um melhor entendimento dos seus atributos.</p>
+
+<p>typedef struct {
+       char <em>name;
+       <em>u16 type;
+       </em>u32 offset;
+       _u32 size;
+       MalelfShdr </em>shdr;
+} MalelfSection;</p>
+
+<p>  O objeto MalelfShdr será tratado de forma mais detalhada quando entrarmos em
+análise de binários ELF. O exemplo abaixo é muito simples, olhem os seguintes
+passos:</p>
+
+<p>1 - Chama o método init: malelf_binary_init();
+2 - Carrega o binário a ser analisado: malelf_binary_open();
+3 - Faz um for pelo número de seçoes do binário;
+4 - Pega o nome das seções: malelf_binary_get_section_name();
+5 - Imprime o nome da seção;
+6 - Libera a memória chamando o método malelf_binary_close();</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;assert.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<h1>include &lt;malelf/error.h></h1>
+
+<p>int main()
+{
+    MalelfBinary bin;
+    MalelfSection section;
+    int error = MALELF_SUCCESS, i = 0;
+    char *name = NULL;</p>
+
+<pre><code>malelf_binary_init(&amp;bin);
+
+error = malelf_binary_open("/bin/ls", &amp;bin);
+if (MALELF_SUCCESS != error) {
+        MALELF_PERROR(error);
+        return 1;
+}
+
+/* Getting only the name of sections */
+for (i = 1; i &lt; MALELF_ELF_FIELD(&amp;bin.ehdr, e_shnum, error); i++) {
+        error = malelf_binary_get_section_name(&amp;bin, i, &amp;name);
+        printf("Section name: %s\n", name);
+}
+
+malelf_binary_close(&amp;bin);
+return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>  A macro MALELF_ELF_FIELD retorna um campo do ehdr, phdr ou shdr. No caso acima
+está retornando o campo e_shnum do ELF Header.</p>
+
+<hr />
+
+<h2>2.4 - Análise de binários</h2>
+
+<p>  A libmalelf fornece getters para acessar as informações do ELF Header, Program
+Header Table e do Section Header Table. Porém, se o programador não gosta de
+acessar os campos através de getters, o acesso poderá ser feito diretamente.</p>
+
+<p>  Vamos aos exemplos. =)</p>
+
+<hr />
+
+<h2>2.4.1 - ELF Header</h2>
+
+<p>  As informações sobre o ELF header ficam concentradas dentro do módulo ehdr,
+que é constituído pelos arquivos ehdr.h e ehdr.c. O exemplo a seguir tem o
+objetivo de imprimir as informações do ELF Header.</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<h1>include &lt;malelf/ehdr.h></h1>
+
+<h1>include &lt;malelf/shdr.h></h1>
+
+<h1>include &lt;malelf/phdr.h></h1>
+
+<h1>include &lt;malelf/defines.h></h1>
+
+<p>int main()
+{
+        /<em> Declarando os tipos </em>/
+        MalelfBinary binary;
+        MalelfEhdr ehdr;
+        MalelfEhdrTable me_type;
+        MalelfEhdrTable me_machine;
+        MalelfEhdrTable me_version;</p>
+
+<pre><code>    _i32 result;
+    _u32 size;
+    _u32 phentsize;
+    _u32 shentsize;
+    _u32 phnum;
+    _u32 shnum;
+    _u32 shstrndx;
+    UNUSED(result);
+
+    /* Chamando o metodo init */
+    malelf_binary_init(&amp;binary);
+
+    /* Alterando o alloc_type*/
+    malelf_binary_set_alloc_type(&amp;binary, MALELF_ALLOC_MALLOC);
+
+    /* Carregando o binario para a memoria */
+    malelf_binary_open("/bin/ls", &amp;binary);
+
+    /* Pegando as informacoes do ELF Header */
+    result = malelf_binary_get_ehdr(&amp;binary, &amp;ehdr);
+    result = malelf_ehdr_get_version(&amp;ehdr, &amp;me_version);
+    result = malelf_ehdr_get_type(&amp;ehdr, &amp;me_type);
+    result = malelf_ehdr_get_machine(&amp;ehdr, &amp;me_machine);
+    result = malelf_ehdr_get_ehsize(&amp;ehdr, &amp;size);
+    result = malelf_ehdr_get_phentsize(&amp;ehdr, &amp;phentsize);
+    result = malelf_ehdr_get_shentsize(&amp;ehdr, &amp;shentsize);
+    result = malelf_ehdr_get_shnum(&amp;ehdr, &amp;shnum);
+    result = malelf_ehdr_get_phnum(&amp;ehdr, &amp;phnum);
+    result = malelf_ehdr_get_shstrndx(&amp;ehdr, &amp;shstrndx);
+
+    printf("Version Name: %d\n", me_version.name);
+    printf("Version Value: %d\n", me_version.value);
+    printf("Version Description: %s\n", me_version.meaning);
+
+    printf("Type Name: %d\n", me_type.name);
+    printf("Type Value: %d\n", me_type.value);
+    printf("Type Description: %s\n", me_type.meaning);
+
+    printf("Machine Name: %d\n", me_machine.name);
+    printf("Machine Value: %d\n", me_machine.value);
+    printf("Machine Description: %s\n", me_machine.meaning);
+
+    printf("Size: %d\n", size);
+    printf("Program Header Table Entry Size: %d\n", phentsize);
+    printf("Section Header Table Entry Size: %d\n", shentsize);
+    printf("Number of Entries PHT: %d\n", phnum);
+    printf("Number of Entries SHT: %d\n", shnum);
+    printf("SHT index: %d\n", shstrndx);
+
+    /* Liberando a memoria */
+    malelf_binary_close(&amp;binary);
+
+    return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>  Vamos explicar como funciona o exemplo abaixo:</p>
+
+<p>1 - Inicializa o objeto MalelfBinary, chamando o método init;
+2 - Altera a forma de carregar o binário na memória;
+3 - Carrega o binário para a memória com o método open;
+4 - Salva o ELF header no objeto ehdr;
+5 - Pega todos os valores com os GETTERS;
+6 - Imprime as informações na tela;
+7 - Libera a memória chamando o método close;</p>
+
+<p>  Simples, não? =)</p>
+
+<p>  Reparem que não estamos verificando o retorno das funções, isso não é uma boa
+prática. Se fizéssemos todas as verificações, o texto ficaria muito longo. =)</p>
+
+<hr />
+
+<h2>2.4.2 - Program Header Table</h2>
+
+<p>  Para demonstrar como acessar as informações do Program Header Table,
+utilizaremos um código que está dentro do módulo dissect do projeto malelf. Mas
+já adiantando, a idéia é muito semelhante ao exemplo anterior.</p>
+
+<p>  O objeto MalelfTable será tratado quando estivermos falando de como reportar
+as informações do binário, nesse momento pode ignorá-lo.</p>
+
+<p>  Seguem os passos para o nosso exemplo abaixo:</p>
+
+<p>1 - Salvamos o phdr;
+2 - Salvamos o ehdr;
+3 - Pegamos o campo e_phnum;
+4 - Realizamos um loop de acordo com a quantidade de segmentos;
+5 - Pegamos o offset e imprimimos;</p>
+
+<p>static <em>u32 </em>malelf_dissect_table_phdr()
+{
+        MalelfTable table;
+        MalelfPhdr phdr;
+        MalelfEhdr ehdr;
+        <em>u32 phnum;
+        </em>u32 value;
+        unsigned int i;</p>
+
+<pre><code>    char *headers[] = {"N", "Offset", NULL};
+
+    if (MALELF_SUCCESS != malelf_table_init(&amp;table, 60, 9, 2)) {
+            return MALELF_ERROR;
+    }
+    malelf_table_set_title(&amp;table, "Program Header Table (PHT)");
+    malelf_table_set_headers(&amp;table, headers);
+
+    /* Salvando o phdr */
+    malelf_binary_get_phdr(&amp;binary, &amp;phdr);
+
+    /* Salvando o ehdr */
+    malelf_binary_get_ehdr(&amp;binary, &amp;ehdr);
+
+    /* Pegando o campo e_phnum */
+    malelf_ehdr_get_phnum(&amp;ehdr, &amp;phnum);
+
+    /* Percorrendo os segmentos */
+    for (i = 0; i &lt; phnum; i++) {
+            malelf_table_add_value(&amp;table, (void *)i, MALELF_TABLE_INT);
+            malelf_phdr_get_offset(&amp;phdr, &amp;value, i);
+            malelf_table_add_value(&amp;table, (void *)value, MALELF_TABLE_HEX);
+    }
+
+    malelf_table_print(&amp;table);
+    malelf_table_finish(&amp;table);
+
+    return MALELF_SUCCESS;
+</code></pre>
+
+<p>}</p>
+
+<hr />
+
+<h2>2.4.3 - Section Header Table</h2>
+
+<p>  Vamos a mais um exemplo. Agora vamos utilizar o módulo shdr para imprimir a
+informação do campo offset. Novamente, podem reparar que o processo é bem
+semelhante ao que já foi mostrado anteriormente.</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<h1>include &lt;malelf/ehdr.h></h1>
+
+<h1>include &lt;malelf/shdr.h></h1>
+
+<h1>include &lt;malelf/phdr.h></h1>
+
+<h1>include &lt;malelf/defines.h></h1>
+
+<p>int main()
+{
+        MalelfBinary bin;
+        MalelfEhdr ehdr;
+        MalelfShdr shdr;
+        unsigned int i;</p>
+
+<pre><code>    _i32 result;
+    _u32 shnum;
+    _u32 offset;
+
+    UNUSED(result);
+
+    malelf_binary_init(&amp;bin);
+    malelf_binary_set_alloc_type(&amp;bin, MALELF_ALLOC_MALLOC);
+    malelf_binary_open("/bin/ls", &amp;bin);
+
+    result = malelf_binary_get_ehdr(&amp;bin, &amp;ehdr);
+    result = malelf_binary_get_shdr(&amp;bin, &amp;shdr);
+    result = malelf_ehdr_get_shnum(&amp;ehdr, &amp;shnum);
+
+    printf("Number of Entries SHT: %d\n", shnum);
+
+    for (i = 0; i &lt; shnum; i++) {
+            malelf_shdr_get_offset(&amp;shdr, &amp;offset, i);
+            printf("Offset: 0x%08x\n", offset);
+    }
+
+    malelf_binary_close(&amp;bin);
+
+    return 0;
+</code></pre>
+
+<p>}</p>
+
+<hr />
+
+<h2>2.5 - Módulo Infect</h2>
+
+<hr />
+
+<ul>
+<li>FIXME: Falta terminar *</li>
+</ul>
+
+
+<hr />
+
+<hr />
+
+<h1>2.6 - Reportando Informações</h1>
+
+<p>  O programador fez o seu projeto utilizando a libmalelf e gostaria de mostrar o
+resultado de alguma forma. Para isso existem duas formas de gerar relatórios
+utilizando a libmalef, através de arquivos xml ou stdout.</p>
+
+<hr />
+
+<h2>2.6.1 - Arquivos XML</h2>
+
+<p>  Para gerar as informações dentro de um arquivo XML a libmalelf dispõe de um
+módulo chamado report. Com isso o programador pode enviar as informações do ELF
+Header, Section Program Table e Program Header Table para um arquivo no
+padrão XML.</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<h1>include &lt;malelf/ehdr.h></h1>
+
+<h1>include &lt;malelf/shdr.h></h1>
+
+<h1>include &lt;malelf/phdr.h></h1>
+
+<h1>include &lt;malelf/defines.h></h1>
+
+<h1>include &lt;malelf/report.h></h1>
+
+<p>int main()
+{
+    MalelfBinary bin;
+    MalelfReport report;</p>
+
+<pre><code>malelf_binary_init(&amp;bin);
+malelf_binary_open("/bin/ls", &amp;bin);
+malelf_report_open(&amp;report, "/tmp/report.xml", MALELF_OUTPUT_XML);
+
+malelf_report_ehdr(&amp;report, &amp;bin);
+
+malelf_report_close(&amp;report);
+malelf_binary_close(&amp;bin);
+
+return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>  Agora vamos ver como ficou a saída.</p>
+
+<p>&lt;?xml version="1.0" encoding="UTF8"?>
+<MalelfBinary>
+ <MalelfEhdr>
+  <type>2</type>
+  <machine>3</machine>
+  <version>1</version>
+  <entry>0x0804c070</entry>
+  <phoff>0x00000034</phoff>
+  <shoff>0x0001a444</shoff>
+  <flags>0</flags>
+  <phentsize>32</phentsize>
+  <phnum>9</phnum>
+  <shentsize>40</shentsize>
+  <shnum>28</shnum>
+  <shstrndx>27</shstrndx>
+ </MalelfEhdr></p>
+
+<hr />
+
+<h2>2.6.2 - Stdout</h2>
+
+<p>  Para imprimir as informações formatadas no terminal, existe o módulo table,
+responsável por criar uma tabela ascii e imprimir na shell. Com o objeto
+MalelfTable, o programador consegue definir o tamanho da tabela, o título e o
+número de linhas e colunas.</p>
+
+<p>  Para esse exemplo, vamos novamente pegar uma função que é utilizada dentro do
+projeto malelf.</p>
+
+<p>1 - Chama o método init do módulo;
+2 - Configura o título da tabela;
+3 - Configura os headers;
+4 - Pega o ELF Header;
+5 - Pega os valores desejados do ELF Header;
+6 - Imprime os valores utilizando o método  malelf_table_print();
+7 - Libera o objeto table chamando o método malelf_table_finish();</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;malelf/binary.h></h1>
+
+<h1>include &lt;malelf/ehdr.h></h1>
+
+<h1>include &lt;malelf/shdr.h></h1>
+
+<h1>include &lt;malelf/phdr.h></h1>
+
+<h1>include &lt;malelf/table.h></h1>
+
+<h1>include &lt;malelf/error.h></h1>
+
+<p>int main()
+{
+        MalelfTable table;
+        MalelfBinary bin;
+        MalelfEhdr ehdr;
+        _u32 value;</p>
+
+<pre><code>    malelf_binary_init(&amp;bin);
+    malelf_binary_open("/bin/ls", &amp;bin);
+    char *headers[] = {"Structure Member", "Description", "Value", NULL};
+
+    /* Parameters: MalelfTable, width, rows, columns */
+    if (MALELF_SUCCESS != malelf_table_init(&amp;table, 78, 3, 3)) {
+            return MALELF_ERROR;
+    }
+
+    /* Configurando o titulo da tabela */
+    malelf_table_set_title(&amp;table, "ELF Header");
+
+    /* Salvando os headers */
+    malelf_table_set_headers(&amp;table, headers);
+
+    malelf_binary_get_ehdr(&amp;bin, &amp;ehdr);
+
+    /*  1 - Row */
+    MalelfEhdrTable me_type;
+    malelf_ehdr_get_type(&amp;ehdr, &amp;me_type);
+    malelf_table_add_value(&amp;table, (void*)"e_type", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table, (void*)"Object Type", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table,
+                           (void*)me_type.meaning,
+                           MALELF_TABLE_STR);
+
+    /*  2 - Row */
+    MalelfEhdrTable me_version;
+    malelf_ehdr_get_version(&amp;ehdr, &amp;me_version);
+    malelf_table_add_value(&amp;table, (void*)"e_version", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table, (void*)"Version", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table,
+                           (void*)me_version.value,
+                           MALELF_TABLE_INT);
+
+    /*  3 - Row */
+    malelf_ehdr_get_entry(&amp;ehdr, &amp;value);
+    malelf_table_add_value(&amp;table, (void*)"e_entry", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table, (void*)"Entry Point", MALELF_TABLE_STR);
+    malelf_table_add_value(&amp;table, (void*)value, MALELF_TABLE_HEX);
+
+    malelf_table_print(&amp;table);
+
+    malelf_table_finish(&amp;table);
+    malelf_binary_close(&amp;bin);
+
+    return 0;
+</code></pre>
+
+<p>}</p>
+
+<p>  E essa é a saída do nosso programa. =)</p>
+
+<p>+-----------------------------------------------------------------------------+
+|                                  ELF Header                                 |
++---------------------------+----------------------+--------------------------+
+|     Structure Member      |     Description      |          Value           |
++---------------------------+----------------------+--------------------------+
+|          e_type           |     Object Type      |     Executable file      |
+|         e_version         |       Version        |            1             |
+|          e_entry          |     Entry Point      |       0x0804c070         |
++---------------------------+----------------------+--------------------------+</p>
+
+<hr />
+
+<h1>2.7 - Debugando a libmalelf</h1>
+
+<p>  Existe a possibilidade de ver as mensagens que a libmalelf reporta. Para isso,
+basta exportarmos uma váriavel de ambiente chamada MALELF_DEBUG.</p>
+
+<p>$ export MALELF_DEBUG=1</p>
+
+<p>  Lembram do nosso primeiro exemplo utilizando a libmalelf? Pois então vamos ver
+o que retorna da sua execução com a opção de debug ligada.</p>
+
+<p>$ ./hello</p>
+
+<p>[INFO][Fri Jun 14 00:31:47 2013][malelf_binary_init][binary.c:235] MalelfBinary
+structure initialized.</p>
+
+<p>Hello Libmalelf bin[0xbfc9605c]</p>
+
+<p>[INFO][Fri Jun 14 00:31:47 2013][malelf_binary_close][binary.c:409] Binary
+'(null)' closed</p>
+
+<p>  Caso você queira receber essas informações em um arquivo de log, pode
+configurar a variável de ambiente MALELF_DEBUG_FILE.</p>
+
+<p>  $ export MALELF_DEBUG_FILE = /tmp/libmalelf.log</p>
+
+<hr />
+
+<h1>3 - Projeto malelf</h1>
+
+<p>  Malelf é uma ferramenta que utiliza a libmalelf para analisar e infectar
+binários ELF.
+  Nessa parte iremos apenas demonstrar como utilizar o binário, porque toda a
+inteligência do projeto fica dentro da libmalelf que já foi explicada
+anteriormente.</p>
+
+<hr />
+
+<h2>3.1 - Build do malelf</h2>
+
+<p>  O processo de build da ferramenta malelf é bem simples.</p>
+
+<p>Dependências:
+- libmalelf</p>
+
+<p>$ ./configure
+$ make
+$ sudo make install</p>
+
+<p>  Agora que o malelf está em sua máquina podemos começar a fazer alguns
+exemplos.</p>
+
+<hr />
+
+<h2>3.2 - Usando o módulo dissect</h2>
+
+<p>  Agora vamos utilizar a ferramenta malelf para pegar as informações do binário.
+Antes de tudo, vamos ver o help do módulo dissect.</p>
+
+<p>$ malelf dissect -h</p>
+
+<p>This command display information about the ELF binary.
+Usage: malelf dissect <options>
+         -h, --help     Dissect Help
+         -i, --input    Binary File
+         -e, --ehdr     Display ELF Header
+         -s, --shdr     Display Section Header Table
+         -p, --phdr     Display Program Header Table
+         -S, --stable   Display Symbol Table
+         -f, --format   Output Format (XML or Stdout). Default is Stdout.
+         -o, --output   Output File.
+Example: malelf dissect -i /bin/ls -f xml -o /tmp/binary.xml</p>
+
+<p>  Mostrando o ELF Header na shell:</p>
+
+<p>$ malelf dissect -i /bin/ls -e</p>
+
+<p>  Mostrando o Program Header Table na shell:</p>
+
+<p>$ malelf dissect -i /bin/ls -p</p>
+
+<p>  Mostrando o Section Header Table na shell:</p>
+
+<p>$ malelf dissect -i /bin/ls -s</p>
+
+<p>  Para jogar as informações em arquivos XML é simples:</p>
+
+<p>$ malelf dissect -i /bin/ls -f xml -o /tmp/bin.txt</p>
+
+<hr />
+
+<h2>3.3 - Usando o módulo infect</h2>
+
+<hr />
+
+<ul>
+<li>FIXME: Faltando escrever essa parte. *</li>
+</ul>
+
+
+<hr />
+
+<hr />
+
+<h1>4 - malelfgui</h1>
+
+<p>  MalelfGUI é um front-end visual para o projeto malelf, utilizando Qt. Está em
+estágio inicial de desenvolvimento e, por isso, deixaremos essa parte para
+escrever em outro momento. Porém sinta-se a vontade de entrar no github e meter
+a mão na massa.</p>
+
+<ul>
+<li>https://github.com/SecPlus/malelfgui</li>
+</ul>
+
+
+<hr />
+
+<h1>5 - Links</h1>
+
+<p>[1] - Wikipedia: Executable and Linkable Format
+  http://en.wikipedia.org/wiki/Executable_and_Linkable_Format</p>
+
+<p>[2] - OS Dev - ELF
+  http://wiki.osdev.org/ELF</p>
+
+<p>[3] - Dissecando ELF
+  http://0fx66.com/files/zines/cogumelo-binario/edicoes/1/DissecandoELF.txt</p>
+
+<hr />
+
+<h1>6 - Conclusão</h1>
+
+<p>  O projeto malelficus ainda está em sua fase inicial, provavelmente com muitos
+bugs. A equipe de desenvoledores do projeto ainda é pequena e com pouco tempo
+livre, pois a cerveja toma muito tempo dos programadores (sim, esse projeto foi
+feito por um bando de alcoólatras).
+  Então sinta-se livre para ajudar de qualquer forma com o projeto, seja codando,
+reportando bugs ou dando ideias. Caso não tenha gostado do projeto, pode tacar
+tomate, xingar a irmã e até a mãe que está tudo beleza, mas se falar mal do
+código ai tu vai me ofender. hehehe =)</p>
+
+
+</article>
+
+      </div>
+      <div class="span-5 last" id="sidebar">
+        <div class="sidebarbox"> 
+          <h4>Pages</h4> 
+          <ul id="pages">
+	        <li>
+              <a rel="bookmark" title="Home" href="/">Home</a>
+            </li>
+            <li>
+              <a rel="bookmark" title="About" href="/about">About</a>
+            </li>
+            <li>
+              <a rel="bookmark" title="Documentation" href="/documentation">Documentation</a>
+            </li>
+            <li>
+              <a rel="bookmark" title="Archives" href="/archives" id="archives">Archives</a> 
+            </li>
+          </ul>
+        </div>
+        <div class="sidebarbox"> 
+          <h4>Subscribe</h4> 
+          <ul> 
+            <li> 
+              <a title="RSS Feed" href="/feed" class="icon-link" id="feed-link">RSS</a> 
+            </li> 
+          </ul> 
+        </div> 
+        <div class="sidebarbox"> 
+          <h4>Elsewhere</h4> 
+          <ul> 
+            <li> 
+              <a rel="bookmark" title="Twitter" href="http://twitter.com/pbenatto" class="icon-link" id="twitter-link">Twitter</a> 
+            </li> 
+            <li> 
+              <a rel="bookmark" title="GitHub" href="http://github.com/patito" class="icon-link" id="github-link">GitHub</a> 
+            </li> 
+          </ul> 
+        </div>
+        <div class="sidebarbox"> 
+          <h4>Contact Me</h4> 
+          <ul> 
+            <li> 
+              <a rel="bookmark" title="Email" href="mailto:benatto@gmail.com" class="icon-link" id="gmail-link">Gmail</a> 
+            </li> 
+            <li> 
+              <a rel="bookmark" title="Skype" href="skype:paulobenatto?chat" class="icon-link" id="skype-link">Skype</a> 
+            </li> 
+          </ul> 
+        </div> 
+      </div>
+
+      <footer class="span-21 last" id="footer">
+        All content copyright &copy; Paulo L. Benatto. Written in mostly valid <a href="http://validator.w3.org/check?uri=http%3A%2F%2Ftjstein.com%2F" title="Valid HTML5" rel="external" target="_blank">HTML5</a> and <a href="http://jigsaw.w3.org/css-validator/validator?uri=http%3A%2F%2Ftjstein.com&amp;profile=css3&amp;usermedium=all&amp;warning=1" title="Valid CSS3" rel="external" target="_blank">CSS3</a>. Powered by <a href="http://github.com/mojombo/jekyll" title="The Jekyll (static site generator) code repository" rel="external" target="_blank">Jekyll</a>.
+      </footer>
+    </div>
+
+    <script type="text/javascript">
+  //<![CDATA[
+  (function() {
+    var links = document.getElementsByTagName('a');
+    var query = '?';
+    for(var i = 0; i < links.length; i++) {
+      if(links[i].href.indexOf('#disqus_thread') >= 0) {
+        query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+      }
+    }
+    document.write('<script charset="utf-8" type="text/javascript" src="http://disqus.com/forums/benatto/get_num_replies.js' + query + '"></' + 'script>');
+  })();
+  //]]>
+</script>
+
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
