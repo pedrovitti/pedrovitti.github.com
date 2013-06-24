@@ -7,5 +7,5 @@ comments: false
 
 Documentação do projeto malelficus.
 
-<img title="Hackers programando o malelficus" src="/images/hackers.jpg" alt="" width="469" height="352" />
+<img title="Hackers programando o malelficus" src="/images/hacker1.jpg" alt="" width="469" height="352" />
 
