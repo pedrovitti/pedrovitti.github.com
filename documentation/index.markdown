@@ -103,7 +103,7 @@ programar.
 
 Vamos demonstrar como está organizado o código do projeto no github.
 
-```
+```c
 libmalelf/
 --+-------
   |
