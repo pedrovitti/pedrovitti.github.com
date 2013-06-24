@@ -3,76 +3,78 @@ layout: page
 title: Documentation
 ---
 
+ * 1 - [Introdução](#introducao)
+   * 1.1 - [O que são arquivos ELF?](#arquivoself)
+ * 2 - [Projeto libmalelf](#libmalelf)
+   * 2.1 - [Build](#build)
+   * 2.2 - [Organização](#organizacao)
+   * 2.3 - [Módulo Binary](#modulobinary)
+     * 2.3.1 - [Hello libmalelf!](#hellolibmalelf)
+     * 2.3.2 - [Pegando o nome das seções](#nomessecoes)
+   * 2.4 - [Análise de binários](#analisebinario)
+     * 2.4.1 - [ELF Header](#elfheader)
+     * 2.4.2 - [Program Header Table](#pht)
+     * 2.4.3 - [Section Header Table](#sht)
+   * 2.5 - [Módulo Infect](#moduloinfect)
+   * 2.6 - [Reportando informações](#report)
+     * 2.6.1 - [Arquivos XML](#xml)
+     * 2.6.2 - [Stdout](#stdout)
+   * 2.7 - [Módulo de Debug](#modulodebug)
+ * 3 - [Projeto malelf](#malelf)
+   * 3.1 - [Build do malelf](#buildmalelf)
+   * 3.2 - [Usando o módulo dissect](#dissect)
+   * 3.3 - [Usando o módulo infect](#infect)
+ * 4 - [Projeto malelfgui](#malelfgui)
+ * 5 - [Links](#links)
+ * 6 - [Conclusão](#conclusao)
+
+<a id="introducao"></a>
 ## 1 - Introdução ##
 
-O projeto malELFicus começou a ser desenvolvido em 2011 por Tiago Natel de
-Moura com o objetivo de estudar o formato ELF (Executable and Linkable Format) e
-disseminar o conhecimento de desenvolvimento e análise de malwares para Linux no
-cenário nacional.
+<p style="text-align:justify">O projeto <b>malelficus</b> começou a ser desenvolvido em 2011 por Tiago Natel de Moura com o objetivo de estudar o formato ELF (Executable and Linkable Format) e disseminar o conhecimento de desenvolvimento e análise de malwares para Linux no cenário nacional.</p>
 
-Atualmente o projeto esta passando por um refactoring para corrigir bugs
-antigos, adicionar bugs novos e mudar um pouco de sua arquitetura inicial.
-Basicamente o projeto malelficus está dividido em 3 partes: **libmalelf**, **malelf**
-e **malelfgui**. Cada um desses projetos é apresentado separadamente, de forma
-detalhada, ao logo do documento.
+<p style="text-align:justify">
+Atualmente o projeto esta passando por um refactoring para corrigir bugs antigos, adicionar bugs novos e mudar um pouco de sua arquitetura inicial. Basicamente o projeto malelficus está dividido em 3 partes: <b>libmalelf</b>, <b>malelf</b> e <b>malelfgui</b>. Cada um desses projetos é apresentado separadamente, de forma detalhada, ao logo do documento.</p>
 
-  O repositório do projeto está no github e pode ser acessado através dos
-links:
+<p style="text-align:justify"> O repositório do projeto pode ser acessado no github através dos links: </p>
 
 * **libmalelf** - https://github.com/SecPlus/libmalelf
 * **malelf** - https://github.com/SecPlus/malelf
 * **malelfgui** - https://github.com/SecPlus/malelfgui
 * **malelficus** - https://github.com/SecPlus/malelficus
 
+<p style="text-align:justify"> Você nesse momento deve estar se perguntando para que serve o repositório
+malelficus, já que todos os projetos são separados? O Malelficus é o agregador, ele linka e faz build dos outros três projetos.</p>
 
-Você nesse momento deve estar se perguntando para que serve o repositório
-malelficus, já que todos os projetos são separados? O Malelficus é o
-agregador, ele linka e faz build dos outros três projetos.
-
-
+<a id="arquivoself"></a>
 ### 1.1 - O que são arquivos ELF? ###
 
+<p style="text-align:justify">O objetivo desse documento não é ensinar o formato ELF, e sim apresentar o projeto <b>malelficus</b>. Por isso, deduzimos que o leitor tenha conhecimento prévio sobre ELF para ler esse documento. Entretanto, retiramos uma parte do documento DissecandoELF.txt (escrito por Felipe Pena (sigsegv) e publicado na Cogumelo Binário 1) explicando o que são arquivos ELF para dar uma visão geral.
+</p>
+<p style="text-align:justify">  O ELF (Executable and Linking Format) nada mais é do que um formato padrão de arquivo executável, código objeto, objeto compartilhado, e core dumps. Em 1999 ele foi adotado como formato de arquivo binário para Unix e unix-like em x86 pelo projeto 86open. [1] Sua primeira aparição foi no Solaris 2.0 (o conhecido SunOS 5.0), que é baseado no SVR4. [2]</p>
 
-  O objetivo desse documento não é ensinar o formato ELF, e sim apresentar o
-projeto **malELFicus**. Por isso, deduzimos que o leitor tenha conhecimento prévio
-sobre ELF para ler esse documento.
-  Entretanto, retiramos uma parte do documento DissecandoELF.txt (escrito por
-Felipe Pena (sigsegv) e publicado na Cogumelo Binário 1) explicando o que são
-arquivos ELF para dar uma visão geral.
+<p> Para maiores informações verificar os Links no final do documento.</p>
 
-  O ELF (Executable and Linking Format) nada mais é do que um formato padrão de
-arquivo executável, código objeto, objeto compartilhado, e core dumps. Em 1999
-ele foi adotado como formato de arquivo binário para Unix e unix-like em x86 pe-
-lo projeto 86open. [1] Sua primeira aparição foi no Solaris 2.0 (o conhecido
-SunOS 5.0), que é baseado no SVR4. [2]
-
-  Para maiores informações verificar os Links no final do documento.
-
-
+<a id="libmalelf"></a>
 ## 2 - Libmalelf ##
 
-  *"The libmalelf is an evil library that could be used for good! It was
+<p style="text-align:center"> <i> "The libmalelf is an evil library that could be used for good! It was
 developed with the intent to assist in the process of infecting binaries and
-provide a safe way to analyze malwares".*
+provide a safe way to analyze malwares". </i> </p>
+<p style="text-align:justify">
+O objetivo principal da biblioteca é facilitar o estudo de arquivos binários ELF, e ajudar no entendimento, comportamento e funcionamento e com isso permitir a realização de uma análise aprofundada de arquivos maliciosos. Através dessa análise, é possível combater pragas virtuaise efetuar respostas a incidentes de forma mais rápida e efetiva. </p>
 
-  Resumindo, a libmalelf, fornece uma maneira rápida e fácil para programadores
-desenvolverem suas próprias ferramentas de análise e infecção de binários ELF.
+Com a **libmalelf**, é possível:
 
-  Com a libmalelf o programador poderá:
+  * Analisar e infectar binários ELF;
+  * Dissecar a estrutura de dados ELF;
+  * Adicionar segmentos/seções de conteúdo e cabeçalhos no binário;
+  * Modificar qualquer informação de um arquivo ELF;
+  * Identificar vetores de ataque;
+  * Encontrar "buracos" ou lacunas para inserção de código;
+  * Criar o seu próprio arquivo binário a partir do zero.
 
-- **Analisar e infectar binários ELF;**
-- **Adicionar segmentos/seções e headers ao binário;**
-- **Modificar qualquer informação do ELF;**
-- **Encontrar holes/gaps para inserir no código;**
-- **Criar binários do zero;**
-
-  Agora que já sabemos o que é a libmalelf, vamos descobrir como ela funciona.
-
-*****
-COMPLEMENTAR
-*****
-
-
+<a id="build"></a>
 ### 2.1 Build ###
 
   Para baixar o código fonte é necessário que você tenha o git instalado.
@@ -96,11 +98,12 @@ Caso sua distribuição Linux seja baseada em Debian:
 Pronto! Agora você já tem a libmalelf em sua máquina e podemos começar a
 programar.
 
-
+<a id="organizacao"></a>
 ### 2.2 Organização ###
 
-  Vamos demonstrar como está organizado o código do projeto no github.
+Vamos demonstrar como está organizado o código do projeto no github.
 
+```
 libmalelf/
 --+-------
   |
@@ -124,30 +127,28 @@ libmalelf/
   |
   +-- tests/
        |-- TEST FILES
+```
 
 
   Vamos explicar resumidamente a função de cada módulo dentro do projeto.
 
-- Módulo binary: responsável por armazenar todas as informações do binário ELF.
-- Módulo ehdr: Armazena as informações do ELF Header.
-- Módulo phdr: Armazena as informações do Program Header Table.
-- Módulo shdr: Armazena as informações do Section Header Table.
-- Módulo debug: Implementa a parte de debug da biblioteca.
-- Módulo report: Módulo responsável por gerar as informações no formato XML.
-- Módulo error: Faz o mapeamento das mensagens de erro.
-- Módulo infect: Implementa os métodos de infecção.
-- Módulo table: Módulo responsável por gerar as informações na shell.
-- Módulo util: Implementações utilitárias.
+- **Módulo binary**: responsável por armazenar todas as informações do binário ELF.
+- **Módulo ehdr**: Armazena as informações do ELF Header.
+- **Módulo phdr**: Armazena as informações do Program Header Table.
+- **Módulo shdr**: Armazena as informações do Section Header Table.
+- **Módulo debug**: Implementa a parte de debug da biblioteca.
+- **Módulo report**: Módulo responsável por gerar as informações no formato XML.
+- **Módulo error**: Faz o mapeamento das mensagens de erro.
+- **Módulo infect**: Implementa os métodos de infecção.
+- **Módulo table**: Módulo responsável por gerar as informações na shell.
+- **Módulo util**: Implementações utilitárias.
 
-
+<a id="modulobinary"></a>
 ### 2.3 Módulo Binary ###
 
-  O módulo binary é constituido por dois arquivos: binary.c e binary.h. Podemos
-dizer que este é o principal módulo da biblioteca, pois ele é o responsável por
-armazenar todas as informações do binário. Abaixo segue como ele está definido
-dentro da biblioteca.
+<p style="text-align:justify"> O módulo binary é constituido por dois arquivos: <b>binary.c</b> e <b>binary.h</b>. Podemos dizer que este é o principal módulo da biblioteca, pois ele é o responsável por armazenar todas as informações do binário. Abaixo segue como ele está definido dentro da biblioteca. </p>
 
-```c
+```
 typedef struct {
         char *fname;         /* Binary filename */
         char *bkpfile;       /* Filename of backup'ed file in case of
@@ -160,6 +161,7 @@ typedef struct {
         MalelfShdr shdr;     /* Elf Section Headers */
         _u8 alloc_type;      /* System function used to allocate memory */
         _u32 class;          /* Binary arch */
+
 } MalelfBinary;
 ```
 
@@ -174,42 +176,31 @@ typedef struct {
 - **alloc_type**: Como a memória será alocada, com mmap ou malloc.
 - **class**: Arquitetura do binário;
 
-  Os campos **ehdr**, **shdr** e **phdr** serão apresentados de forma mais detalhada ao
+
+Os campos **ehdr**, **shdr** e **phdr** serão apresentados de forma mais detalhada ao
 longo do documento.
-
-  Para começar a utilizar a libmalelf é necessário que o programador conheça
+Para começar a utilizar a libmalelf é necessário que o programador conheça
 alguns métodos básicos.
+<p style="text-align:justify">O método <b>malelf_binary_init()</b> deve ser chamado antes de utilizar qualquer outra função da biblioteca. Esse método é responsável por inicializar as informações do objeto MalelfBinary.</p>
+<p style="text-align:justify"> Para carregar/abrir um binário, existe o método <b>malelf_binary_open()</b>, que por default utiliza a função <b>mmap()</b> para carregar o binário na memória. Caso o programador deseje utilizar o <b>malloc()</b>, existe uma função chamada <b>malelf_binary_set_alloc_type()</b> que pode ser usada passando o parâmetro <b>MALELF_ALLOC_MALLOC</b>, como no exemplo abaixo.</p>
 
-  O método malelf_binary_init() deve ser chamado antes de utilizar qualquer
-outra função da biblioteca. Esse método é responsável por inicializar as
-informações do objeto MalelfBinary.
-
-  Para carregar/abrir um binário, existe o método malelf_binary_open(), que por
-default utiliza a função mmap() para carregar o binário na memória. Caso o
-programador deseje utilizar o malloc(), existe uma função chamada
-malelf_binary_set_alloc_type() que pode ser usada passando o parâmetro
-MALELF_ALLOC_MALLOC, como no exemplo abaixo.
-
-```c
+```
   MalelfBinary bin;
   malelf_binary_set_alloc_type(bin, MALELF_ALLOC_MALLOC);
 ```
 
-  E, por último, mas não menos importante, o programador deve chamar o
-método malelf_binary_close() passando o objeto MalelfBinary como parametro.
+<p style="text-align:justify">E, por último, mas não menos importante, o programador deve chamar o método <b>malelf_binary_close()</b> passando o objeto MalelfBinary como parâmetro. </p>
 
-  Demonstrar todas as funcionalidades do módulo binary é uma tarefa dificil,
-até porque o projeto ainda está em desenvolvimento. Demonstramos alguns
-códigos de exemplo a seguir, porém a melhor maneira de conhecer o módulo
-é lendo seu arquivo de header.
+<p style="text-align:justify">Demonstrar todas as funcionalidades do módulo binary é uma tarefa dificil,
+até porque o projeto ainda está em desenvolvimento. Demonstramos alguns códigos de exemplo a seguir, porém a melhor maneira de conhecer o módulo é lendo seu arquivo de <i>header</i>.</p>
 
-
+<a id="hellolibmalelf"></a>
 #### 2.3.1 - Hello libmalelf ####
 
   Para iniciarmos os exemplos, vamos começar com o maior clichê do mundo da
 programação.
 
-```c
+```
 #include <stdio.h>
 #include <malelf/binary.h>
 
@@ -227,50 +218,49 @@ int main()
 
   Agora vamos compilar o nosso exemplo acima.
 
+
+    $ git clone https://github.com/SecPlus/libmalelf.git
     $ gcc -o hello hello.c -lmalelf -Wall -Wextra -Werror
-    $ ./hello
     Hello Libmalelf bin[0xbfbfd8ec]
 
-  Não sei onde a sua libmalelf foi instalada, caso ela não seja encontrada
-lembre-se de exportar a variável LD_LIBRARY_PATH para o diretório correto.
+Caso a libmalelf não seja encontrada lembre-se de exportar a variável **LD_LIBRARY_PATH** para o diretóriocorreto.
 
     $ export LD_LIBRARY_PATH=/home/benatto/libs/
 
 
+<a id="nomessecoes"></a>
 #### 2.3.2 - Pegando o nome das seções ####
 
 
-  A libmalelf fornece alguns métodos que facilitam o programador pegar uma
-determinada seção, malelf_binary_get_section(), passando o objeto MalelfBinary,
-a posição da seção e o objeto MalelfSection que irá armazenar as informações
-da seção.
-  As informações contidas na seção podem ser acessadas diretamente pelo
-programador, ou através de getters, como no exemplo abaixo, utilizando o método
-malelf_binary_get_section_name(); Abaixo segue o código do objeto MalelfSection
-para um melhor entendimento dos seus atributos.
+ <p style="text-align:justify"> A libmalelf fornece alguns métodos que facilitam o programador pegar uma
+determinada seção, <b>malelf_binary_get_section()</b>, passando o objeto <b>MalelfBinary</b>, a posição da seção e o objeto <b>MalelfSection</b> que irá armazenar as informações da seção.</p>
+<p style="text-align:justify">  As informações contidas na seção podem ser acessadas diretamente pelo
+programador, ou através de <i>getters</i>, como no exemplo abaixo, utilizando o método <b>malelf_binary_get_section_name()</b>; Abaixo segue o código do objeto <b>MalelfSection</b> para um melhor entendimento dos seus atributos.</p>
 
-```c
+```
 typedef struct {
        char *name;
        _u16 type;
        _u32 offset;
        _u32 size;
        MalelfShdr *shdr;
+
 } MalelfSection;
 ```
 
-  O objeto MalelfShdr será tratado de forma mais detalhada quando entrarmos em
-análise de binários ELF. O exemplo abaixo é muito simples, olhem os seguintes
-passos:
+<p style="text-align:justify"> O objeto <b>MalelfShdr</b> será tratado de forma mais detalhada quando entrarmos em análise de binários ELF. O exemplo abaixo é muito simples, olhem os seguintes passos:
+</p>
 
-1 - Chama o método init: malelf_binary_init();
-2 - Carrega o binário a ser analisado: malelf_binary_open();
-3 - Faz um for pelo número de seçoes do binário;
-4 - Pega o nome das seções: malelf_binary_get_section_name();
-5 - Imprime o nome da seção;
-6 - Libera a memória chamando o método malelf_binary_close();
+<p>
+1 - Chama o método init: <b>malelf_binary_init()</b>;<br>
+2 - Carrega o binário a ser analisado: <b>malelf_binary_open()</b>;<br>
+3 - Faz um for pelo número de seçoes do binário;<br>
+4 - Pega o nome das seções: <b>malelf_binary_get_section_name()</b>;<br>
+5 - Imprime o nome da seção;<br>
+6 - Libera a memória chamando o método <b>malelf_binary_close()</b>;<br>
+</p>
 
-```c
+```
 #include <stdio.h>
 #include <assert.h>
 
@@ -303,28 +293,23 @@ int main()
 }
 ```
 
-  A macro MALELF_ELF_FIELD retorna um campo do ehdr, phdr ou shdr. No caso acima
-está retornando o campo e_shnum do ELF Header.
+<p style="text-align:justify"> A macro <b>MALELF_ELF_FIELD</b> retorna um campo do <b>ehdr</b>, <b>phdr</b> ou <b>shdr</b>. No caso acima está retornando o campo <b>e_shnum</b> do ELF Header.</p>
 
-
+<a id="analisebinario"></a>
 ### 2.4 - Análise de binários ###
 
+<p style="text-align:justify"> A libmalelf fornece <i>getters</i> para acessar as informações do <b>ELF Header</b>, <b>Program Header Table</b> e do <b>Section Header Table</b>. Porém, se o programador não gosta de acessar os campos através de getters, o acesso pode ser feito diretamente. </p>
 
-  A libmalelf fornece getters para acessar as informações do ELF Header, Program
-Header Table e do Section Header Table. Porém, se o programador não gosta de
-acessar os campos através de getters, o acesso poderá ser feito diretamente.
+Vamos aos exemplos. =)
 
-  Vamos aos exemplos. =)
-
-
+<a id="elfheader"></a>
 #### 2.4.1 - ELF Header ####
 
 
-  As informações sobre o ELF header ficam concentradas dentro do módulo ehdr,
-que é constituído pelos arquivos ehdr.h e ehdr.c. O exemplo a seguir tem o
-objetivo de imprimir as informações do ELF Header.
+<p style="text-align:justify"> As informações sobre o ELF header ficam concentradas dentro do módulo ehdr,
+que é constituído pelos arquivos ehdr.h e ehdr.c. O exemplo a seguir tem o objetivo de imprimir as informações do ELF Header.</p>
 
-```c
+```
 #include <stdio.h>
 
 #include <malelf/binary.h>
@@ -401,39 +386,37 @@ int main()
 
   Vamos explicar como funciona o exemplo abaixo:
 
-1 - Inicializa o objeto MalelfBinary, chamando o método init;
-2 - Altera a forma de carregar o binário na memória;
-3 - Carrega o binário para a memória com o método open;
-4 - Salva o ELF header no objeto ehdr;
-5 - Pega todos os valores com os GETTERS;
-6 - Imprime as informações na tela;
-7 - Libera a memória chamando o método close;
-
+<p>
+1 - Inicializa o objeto <b>MalelfBinary</b>, chamando o método <b>init</b>;<br>
+2 - Altera a forma de carregar o binário na memória;<br>
+3 - Carrega o binário para a memória com o método <b>open</b>;<br>
+4 - Salva o ELF header no objeto <b>ehdr</b>;<br>
+5 - Pega todos os valores com os <i>getters</i>;<br>
+6 - Imprime as informações na tela;<br>
+7 - Libera a memória chamando o método <b>close</b>;<br>
+</p>
   Simples, não? =)
 
-  Reparem que não estamos verificando o retorno das funções, isso não é uma boa
-prática. Se fizéssemos todas as verificações, o texto ficaria muito longo. =)
+<p style="text-align:justify">Reparem que não estamos verificando o retorno das funções, isso não é uma boa prática. Se fizéssemos todas as verificações, o texto ficaria muito longo. =)</p>
 
-
+<a id="pht"></a>
 #### 2.4.2 - Program Header Table ####
 
 
-  Para demonstrar como acessar as informações do Program Header Table,
-utilizaremos um código que está dentro do módulo dissect do projeto malelf. Mas
-já adiantando, a idéia é muito semelhante ao exemplo anterior.
+<p style="text-align:justify"> Para demonstrar como acessar as informações do <b>Program Header Table</b>,utilizaremos um código que está dentro do módulo <b>dissect</b> do projeto <b>malelf</b>. Mas já adiantando, a idéia é muito semelhante ao exemplo anterior.</p>
 
-  O objeto MalelfTable será tratado quando estivermos falando de como reportar
-as informações do binário, nesse momento pode ignorá-lo.
+<p style="text-align:justify"> O objeto <b>MalelfTable</b> será tratado quando estivermos falando de como reportar as informações do binário, nesse momento pode ignorá-lo. </p>
 
   Seguem os passos para o nosso exemplo abaixo:
 
-1 - Salvamos o phdr;
-2 - Salvamos o ehdr;
-3 - Pegamos o campo e_phnum;
-4 - Realizamos um loop de acordo com a quantidade de segmentos;
+<p>1 - Salvamos o <b>phdr</b>;<br>
+2 - Salvamos o <b>ehdr</b>;<br>
+3 - Pegamos o campo <b>e_phnum,</b>;<br>
+4 - Realizamos um loop de acordo com a quantidade de segmentos;<br>
 5 - Pegamos o offset e imprimimos;
+</p>
 
-```c
+```
 static _u32 _malelf_dissect_table_phdr()
 {
         MalelfTable table;
@@ -473,15 +456,12 @@ static _u32 _malelf_dissect_table_phdr()
         return MALELF_SUCCESS;
 }
 ```
-
+<a id="sht"></a>
 #### 2.4.3 - Section Header Table ####
 
+<p style="text-align:justify"> Vamos a mais um exemplo. Agora vamos utilizar o módulo <b>shdr</b> para imprimir a informação do campo offset. Novamente, podem reparar que o processo é bem semelhante ao que já foi mostrado anteriormente. </p>
 
-  Vamos a mais um exemplo. Agora vamos utilizar o módulo shdr para imprimir a
-informação do campo offset. Novamente, podem reparar que o processo é bem
-semelhante ao que já foi mostrado anteriormente.
-
-```c
+```
 #include <stdio.h>
 #include <malelf/binary.h>
 #include <malelf/ehdr.h>
@@ -523,30 +503,27 @@ int main()
         return 0;
 }
 ```
-
+<a id="moduloinfect"></a>
 ### 2.5 - Módulo Infect ###
 
 *************************
 * FIXME: Falta terminar *
 *************************
 
-
+<a id="report"></a>
 ### 2.6 - Reportando Informações ###
 
-  O programador fez o seu projeto utilizando a libmalelf e gostaria de mostrar o
-resultado de alguma forma. Para isso existem duas formas de gerar relatórios
-utilizando a libmalef, através de arquivos xml ou stdout.
+<p style="text-align:justify"> Existem duas formas de gerar relatórios de informações utilizando a <b>libmalelf</b>, através de arquivos <b>xml</b> ou <b>stdout</b>.</p>
 
-
+<a id="xml"></a>
 #### 2.6.1 - Arquivos XML ####
 
 
-  Para gerar as informações dentro de um arquivo XML a libmalelf dispõe de um
-módulo chamado report. Com isso o programador pode enviar as informações do ELF
-Header, Section Program Table e Program Header Table para um arquivo no
-padrão XML.
+<p style="text-align:justify"> Para gerar as informações dentro de um arquivo XML a libmalelf dispõe de um
+módulo chamado <b>report</b>. Com isso o programador pode enviar as informações do ELF Header, Section Program Table e Program Header Table para um arquivo no padrão XML.
+</p>
 
-```c
+```
 #include <stdio.h>
 #include <malelf/binary.h>
 #include <malelf/ehdr.h>
@@ -576,7 +553,7 @@ int main()
 
   Agora vamos ver como ficou a saída.
 
-```xml
+```
 <?xml version="1.0" encoding="UTF8"?>
 <MalelfBinary>
  <MalelfEhdr>
@@ -594,26 +571,23 @@ int main()
   <shstrndx>27</shstrndx>
  </MalelfEhdr>
 ```
-
+<a id="stdout"></a>
 ### 2.6.2 - Stdout ###
 
-  Para imprimir as informações formatadas no terminal, existe o módulo table,
-responsável por criar uma tabela ascii e imprimir na shell. Com o objeto
-MalelfTable, o programador consegue definir o tamanho da tabela, o título e o
-número de linhas e colunas.
+<p style="text-align:justify"> Para imprimir as informações formatadas no terminal, existe o módulo table, responsável por criar uma tabela ascii e imprimir na shell. Com o objeto MalelfTable, o programador consegue definir o tamanho da tabela, o título e o número de linhas e colunas. </p>
 
-  Para esse exemplo, vamos novamente pegar uma função que é utilizada dentro do
-projeto malelf.
+<p style="text-align:justify"> Para esse exemplo, vamos novamente pegar uma função que é utilizada dentro do projeto malelf.</p>
+<p>
+  1 - Chama o método init do módulo;<br>
+  2 - Configura o título da tabela;<br>
+  3 - Configura os headers;<br>
+  4 - Pega o ELF Header;<br>
+  5 - Pega os valores desejados do ELF Header;<br>
+  6 - Imprime os valores utilizando o método <b>malelf_table_print()</b>;<br>
+  7 - Libera o objeto table chamando o método <b>malelf_table_finish()</b>;<br>
+</p>
 
-  1 - Chama o método init do módulo;
-  2 - Configura o título da tabela;
-  3 - Configura os headers;
-  4 - Pega o ELF Header;
-  5 - Pega os valores desejados do ELF Header;
-  6 - Imprime os valores utilizando o método  malelf_table_print();
-  7 - Libera o objeto table chamando o método malelf_table_finish();
-
-```c
+```
 #include <stdio.h>
 #include <malelf/binary.h>
 #include <malelf/ehdr.h>
@@ -681,52 +655,38 @@ int main()
 
   E essa é a saída do nosso programa. =)
 
-+-----------------------------------------------------------------------------+
-|                                  ELF Header                                 |
-+---------------------------+----------------------+--------------------------+
-|     Structure Member      |     Description      |          Value           |
-+---------------------------+----------------------+--------------------------+
-|          e_type           |     Object Type      |     Executable file      |
-|         e_version         |       Version        |            1             |
-|          e_entry          |     Entry Point      |       0x0804c070         |
-+---------------------------+----------------------+--------------------------+
+<img src="/images/table.png" align="left" height="140" width="600"><br>
+<br>
+<br>
 
+<a id="modulodebug"></a>
+### 2.7 - Módulo de Debug ###
 
-### 2.7 - Debugando a libmalelf ###
-
-
-  Existe a possibilidade de ver as mensagens que a libmalelf reporta. Para isso,
-basta exportarmos uma váriavel de ambiente chamada MALELF_DEBUG.
+<p style="text-align:justify"> Existe a possibilidade de ver as mensagens que a <b>libmalelf</b> reporta. Para isso, basta exportarmos uma váriavel de ambiente chamada <b>MALELF_DEBUG.</b> </p>
 
     $ export MALELF_DEBUG=1
 
-  Lembram do nosso primeiro exemplo utilizando a libmalelf? Pois então vamos ver
-o que retorna da sua execução com a opção de debug ligada.
+  Lembram do nosso primeiro exemplo utilizando a libmalelf? Pois então vamos ver o que retorna da sua execução com a opção de debug ligada.
 
     $ ./hello
 
-[INFO][Fri Jun 14 00:31:47 2013][malelf_binary_init][binary.c:235] MalelfBinary
-structure initialized.
+    [INFO][Fri Jun 14 00:31:47 2013][malelf_binary_init][binary.c:235] MalelfBinary structure initialized.
 
-Hello Libmalelf bin[0xbfc9605c]
+    Hello Libmalelf bin[0xbfc9605c]
 
-[INFO][Fri Jun 14 00:31:47 2013][malelf_binary_close][binary.c:409] Binary
-'(null)' closed
+    [INFO][Fri Jun 14 00:31:47 2013][malelf_binary_close][binary.c:409] Binary '(null)' closed
 
-  Caso você queira receber essas informações em um arquivo de log, pode
-configurar a variável de ambiente MALELF_DEBUG_FILE.
+<p style="text-align:justify"> Caso você queira receber essas informações em um arquivo de log, pode
+configurar a variável de ambiente <b>MALELF_DEBUG_FILE</b>. </p>
 
     $ export MALELF_DEBUG_FILE = /tmp/libmalelf.log
 
-
+<a id="malelf"></a>
 ## 3 - Projeto malelf ##
 
-  Malelf é uma ferramenta que utiliza a libmalelf para analisar e infectar
-binários ELF.
-  Nessa parte iremos apenas demonstrar como utilizar o binário, porque toda a
-inteligência do projeto fica dentro da libmalelf que já foi explicada
-anteriormente.
+<p style="text-align:justify"> O <b>malelf</b> é uma ferramenta que utiliza a libmalelf para analisar e infectar binários ELF. Nessa parte iremos apenas demonstrar como utilizar o binário, porque toda a inteligência do projeto fica dentro da libmalelf que já foi explicada anteriormente. </p>
 
+<a id="buildmalelf"></a>
 ### 3.1 - Build do malelf ###
 
   O processo de build da ferramenta malelf é bem simples.
@@ -738,10 +698,9 @@ Dependências:
     $ make
     $ sudo make install
 
-  Agora que o malelf está em sua máquina podemos começar a fazer alguns
-exemplos.
+  Agora que o malelf está em sua máquina podemos começar a fazer alguns exemplos.
 
-
+<a id="dissect"></a>
 ### 3.2 - Usando o módulo dissect
 
   Agora vamos utilizar a ferramenta malelf para pegar as informações do binário.
@@ -750,6 +709,8 @@ Antes de tudo, vamos ver o help do módulo dissect.
     $ malelf dissect -h
 
 This command display information about the ELF binary.
+
+```
 Usage: malelf dissect <options>
          -h, --help    	Dissect Help
          -i, --input   	Binary File
@@ -759,7 +720,9 @@ Usage: malelf dissect <options>
          -S, --stable  	Display Symbol Table
          -f, --format  	Output Format (XML or Stdout). Default is Stdout.
          -o, --output  	Output File.
+
 Example: malelf dissect -i /bin/ls -f xml -o /tmp/binary.xml
+```
 
   Mostrando o ELF Header na shell:
 
@@ -777,43 +740,33 @@ Example: malelf dissect -i /bin/ls -f xml -o /tmp/binary.xml
 
     $ malelf dissect -i /bin/ls -f xml -o /tmp/bin.txt
 
+<a id="infect"></a>
 ### 3.3 - Usando o módulo infect ###
 
 ****************************************
 * FIXME: Faltando escrever essa parte. *
 ****************************************
 
+<a id="malelfgui"></a>
 ## 4 - malelfgui ##
 
-  MalelfGUI é um front-end visual para o projeto malelf, utilizando Qt. Está em
-estágio inicial de desenvolvimento e, por isso, deixaremos essa parte para
-escrever em outro momento. Porém sinta-se a vontade de entrar no github e meter
-a mão na massa.
+<p style="text-align:justify"> <b>malelfgui</b> é um front-end visual para o projeto malelf, utilizando Qt. Está em estágio inicial de desenvolvimento e, por isso, deixaremos essa parte para escrever em outro momento. Porém sinta-se a vontade de entrar no github e meter a mão na massa. </p>
 
-- https://github.com/SecPlus/malelfgui
+- <a href="https://github.com/SecPlus/malelfgui">https://github.com/SecPlus/malelfgui</a>
 
-##
-5 - Links
-##
+<a id="links"></a>
+## 5 - Links ##
 
-[1] - Wikipedia: Executable and Linkable Format
-  http://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+[1] - Executable and Linkable Format
+  <a href="http://en.wikipedia.org/wiki/Executable_and_Linkable_Format">http://en.wikipedia.org/wiki/Executable_and_Linkable_Format</a>
 
 [2] - OS Dev - ELF
-  http://wiki.osdev.org/ELF
+  <a href="http://wiki.osdev.org/ELF">http://wiki.osdev.org/ELF</a>
 
 [3] - Dissecando ELF
-  http://0fx66.com/files/zines/cogumelo-binario/edicoes/1/DissecandoELF.txt
+  <a href="http://0fx66.com/files/zines/cogumelo-binario/edicoes/1/DissecandoELF.txt">http://0fx66.com/files/zines/cogumelo-binario/edicoes/1/DissecandoELF.txt</a>
 
-##
-6 - Conclusão
-##
+<a id="conclusao"></a>
+## 6 - Conclusão ##
 
-  O projeto malelficus ainda está em sua fase inicial, provavelmente com muitos
-bugs. A equipe de desenvoledores do projeto ainda é pequena e com pouco tempo
-livre, pois a cerveja toma muito tempo dos programadores (sim, esse projeto foi
-feito por um bando de alcoólatras).
-  Então sinta-se livre para ajudar de qualquer forma com o projeto, seja codando,
-reportando bugs ou dando ideias. Caso não tenha gostado do projeto, pode tacar
-tomate, xingar a irmã e até a mãe que está tudo beleza, mas se falar mal do
-código ai tu vai me ofender. hehehe =)
+<p style="text-align:justify"> O projeto <b>malelficus</b> ainda está em sua fase inicial, provavelmente com muitos bugs. A equipe de desenvolvedores do projeto ainda é pequena e com pouco tempo livre, pois a cerveja toma muito tempo dos programadores (sim, esse projeto foi feito por um bando de alcoólatras). Então sinta-se livre para ajudar de qualquer forma com o projeto, seja codando, reportando bugs ou dando ideias. Caso não tenha gostado do projeto, pode tacar tomate, xingar a irmã e até a mãe que está tudo beleza, mas se falar mal do código ai tu vai me ofender. hehehe =) </p>
