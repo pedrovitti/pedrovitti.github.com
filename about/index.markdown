@@ -3,14 +3,24 @@ layout: page
 title: About
 ---
 
-<img src="/images/patito.jpg" align="left" style="margin-right:30px; margin-top:7px;"> Oi nerd, seja bem vindo(a) ao meu 103455553º blog pessoal. Me chamo Paulo Leonardo Benatto, mais conhecido como Benatto, patito, anão, pitoco, manequim de camisinha, entre outros, tudo isso porque fui compactado com [LZMA](http://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Markov_chain_algorithm). Atualmente trabalho e moro em Florianópolis, sou analista de sistemas na empresa Digitro Tecnologia, minha principal função é desenvolver soluções para Interceptação Internet (lawfull Interception) utilizando plataforma GNU/Linux. A linguagem que eu tenho mais contato no dia-a-dia é C/C++ e também é a linguagem que eu mais gosto. Porém, entretanto, todavia tenho interesse em shell, python, lua, ou qualquer outra linguagem, a idéia é aprender =). O objetivo principal desse blog é postar noticias de tecnologia, colocar meus códigos de teste, os bugs que eu fabrico =), soluções, ou seja, difundir o conhecimento. Não sei muita coisa, mas o pouco que sei tentarei passar para frente. Se tiver alguma duvida, reclamação ou sugestão, não tenha medo, entre em contato comigo.
+<img src="/images/malelficus.jpg" align="left" style="margin-right:30px; margin-top:7px; height:150px; width:180px;">
+<p style="text-align:center"><i>"Be evil, use malelficus!"</i></p>
 
-* **Twitter:** @pbenatto
-* **E-mail:** benatto@gmail.com
-* **GitHub:** https://github.com/patito
-* **Blog:** http://patito.github.com
-* **Skype:** paulobenatto
+<p style="text-align:justify">
+O projeto <b>malelficus</b> começou a ser desenvolvido em 2011 por Tiago Natel de Moura com o objetivo de estudar o formato ELF (Executable and Linkable Format) e disseminar o conhecimento de desenvolvimento e análise de malwares para Linux no cenário nacional. Atualmente o projeto esta passando por um refactoring para corrigir bugs antigos, adicionar bugs novos e mudar um pouco de sua arquitetura inicial. Basicamente o projeto malelficus está dividido em 3 partes: <b>libmalelf</b>, <b>malelf</b> e <b>malelfgui</b>. Cada um desses projetos é apresentado separadamente, de forma detalhada na seção <a href="/documentation/">Documentation</a>.
+</p>
 
+O repositório do projeto pode ser acessado no **github** através dos links:
 
+* **libmalelf** - <a href="https://github.com/SecPlus/libmalelf">https://github.com/SecPlus/libmalelf</a>
+* **malelf** - <a href="https://github.com/SecPlus/malelf"> https://github.com/SecPlus/malelf</a>
+* **malelfgui** - <a href="https://github.com/SecPlus/malelfgui"> https://github.com/SecPlus/malelfgui</a>
+* **malelficus** - <a href="https://github.com/SecPlus/malelficus">https://github.com/SecPlus/malelficus</a>
+
+O projeto malelficus é o agregador, responsável por linkar e fazer o build dos outros três projetos.
+
+* **Twitter:** <a href="http://twitter.com/malelficus">@malelficus</a>
+* **E-mail:** <a href="mailto:malelficus@gmail.com">malelficus@gmail.com</a>
+* **Site:** <a href="http://secplus.github.io/malelficus">http://secplus.github.io/malelficus</a>
 
 Esse blog utiliza o template do [TJ Stein](http://tjstein.com/). Valeu!
