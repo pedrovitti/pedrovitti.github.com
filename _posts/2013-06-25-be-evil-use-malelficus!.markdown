@@ -12,7 +12,7 @@ comments: true
 Neste link é possível encontrar toda a programação do evento:
 <a href="http://fisl.org.br/14/papers_ng/public/fast_grid?event_id=3">http://fisl.org.br/14/papers_ng/public/fast_grid?event_id=3</a>
 
-**Be evil, use malelficus!** <br>
-**Local:** <a href="http://softwarelivre.org/fisl14">FISL 14</a> - PUC/RS - Porto Alegre<br>
-**Horário:** Sábado, 06/07 as 16h <br>
-**Palestrantes:** Tiago Natel de Moura e Paulo Benatto <br>
+<b>Be evil, use malelficus! </b><br>
+<b>Local:</b> <a href="http://softwarelivre.org/fisl14">FISL 14</a> - PUC/RS - Porto Alegre<br>
+<b>Horário:</b> Sábado, 06/07 as 16h <br>
+<b>Palestrantes:</b> Tiago Natel de Moura e Paulo Benatto <br>
