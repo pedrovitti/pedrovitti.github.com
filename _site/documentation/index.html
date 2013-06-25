@@ -227,8 +227,7 @@ programar.</p>
 
 <p>Vamos demonstrar como está organizado o código do projeto no github.</p>
 
-<p><code>c
-libmalelf/
+<pre><code>libmalelf/
 --+-------
   |
   +-- src/
@@ -251,7 +250,8 @@ libmalelf/
   |
   +-- tests/
        |-- TEST FILES
-</code></p>
+</code></pre>
+
 
 <p>  Vamos explicar resumidamente a função de cada módulo dentro do projeto.</p>
 
@@ -278,8 +278,7 @@ libmalelf/
 
 
 
-<pre><code>
-typedef struct {
+<pre><code>typedef struct {
         char *fname;         /* Binary filename */
         char *bkpfile;       /* Filename of backup'ed file in case of
                                 write operations */
@@ -291,11 +290,10 @@ typedef struct {
         MalelfShdr shdr;     /* Elf Section Headers */
         _u8 alloc_type;      /* System function used to allocate memory */
         _u32 class;          /* Binary arch */
+
 } MalelfBinary;
-</pre>
+</code></pre>
 
-
-<p></code></p>
 
 <ul>
 <li><strong>fname:</strong> Nome do binário que iremos trabalhar. Exemplo: <strong>/bin/ls.</strong>;</li>
@@ -324,13 +322,12 @@ alguns métodos básicos.</p>
 
 
 
-<pre><code>
-  MalelfBinary bin;
-  malelf_binary_set_alloc_type(bin, MALELF_ALLOC_MALLOC);
-</pre>
+<pre><code>MalelfBinary bin;
+malelf_binary_set_alloc_type(bin, MALELF_ALLOC_MALLOC);
+</code></pre>
 
 
-<p></code></p>
+
 
 <p style="text-align:justify">E, por último, mas não menos importante, o programador deve chamar o método <b>malelf_binary_close()</b> passando o objeto MalelfBinary como parâmetro. </p>
 
@@ -348,9 +345,8 @@ até porque o projeto ainda está em desenvolvimento. Demonstramos alguns códig
 <p>  Para iniciarmos os exemplos, vamos começar com o maior clichê do mundo da
 programação.</p>
 
-<pre> <code>
-#include <stdio.h>
-#include <malelf/binary.h>
+<pre><code>#include &lt;stdio.h>
+#include &lt;malelf/binary.h>
 
 int main()
 {
@@ -362,10 +358,8 @@ int main()
 
     return 0;
 }
-</pre>
+</code></pre>
 
-
-<p></code></p>
 
 <p>  Agora vamos compilar o nosso exemplo acima.</p>
 
@@ -390,6 +384,8 @@ determinada seção, <b>malelf_binary_get_section()</b>, passando o objeto <b>Ma
 programador, ou através de <i>getters</i>, como no exemplo abaixo, utilizando o método <b>malelf_binary_get_section_name()</b>; Abaixo segue o código do objeto <b>MalelfSection</b> para um melhor entendimento dos seus atributos.</p>
 
 
+
+
 <pre><code>typedef struct {
        char *name;
        _u16 type;
@@ -399,6 +395,9 @@ programador, ou através de <i>getters</i>, como no exemplo abaixo, utilizando o
 
 } MalelfSection;
 </code></pre>
+
+
+
 
 <p style="text-align:justify"> O objeto <b>MalelfShdr</b> será tratado de forma mais detalhada quando entrarmos em análise de binários ELF. O exemplo abaixo é muito simples, olhem os seguintes passos:
 </p>
@@ -416,11 +415,13 @@ programador, ou através de <i>getters</i>, como no exemplo abaixo, utilizando o
 </p>
 
 
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;assert.h&gt;
 
-#include &lt;malelf/binary.h&gt;
-#include &lt;malelf/error.h&gt;
+
+<pre><code>#include &lt;stdio.h>
+#include &lt;assert.h>
+
+#include &lt;malelf/binary.h>
+#include &lt;malelf/error.h>
 
 int main()
 {
@@ -429,24 +430,27 @@ int main()
     int error = MALELF_SUCCESS, i = 0;
     char *name = NULL;
 
-    malelf_binary_init(&amp;bin);
+    malelf_binary_init(&bin);
 
-    error = malelf_binary_open("/bin/ls", &amp;bin);
+    error = malelf_binary_open("/bin/ls", &bin);
     if (MALELF_SUCCESS != error) {
             MALELF_PERROR(error);
             return 1;
     }
 
     /* Getting only the name of sections */
-    for (i = 1; i &lt; MALELF_ELF_FIELD(&amp;bin.ehdr, e_shnum, error); i++) {
-            error = malelf_binary_get_section_name(&amp;bin, i, &amp;name);
+    for (i = 1; i < MALELF_ELF_FIELD(&bin.ehdr, e_shnum, error); i++) {
+            error = malelf_binary_get_section_name(&bin, i, &name);
             printf("Section name: %s\n", name);
     }
 
-    malelf_binary_close(&amp;bin);
+    malelf_binary_close(&bin);
     return 0;
 }
 </code></pre>
+
+
+
 
 <p style="text-align:justify"> A macro <b>MALELF_ELF_FIELD</b> retorna um campo do <b>ehdr</b>, <b>phdr</b> ou <b>shdr</b>. No caso acima está retornando o campo <b>e_shnum</b> do ELF Header.</p>
 
@@ -468,14 +472,14 @@ int main()
 que é constituído pelos arquivos ehdr.h e ehdr.c. O exemplo a seguir tem o objetivo de imprimir as informações do ELF Header.</p>
 
 
-<pre><code>#include &lt;stdio.h&gt;
 
-#include &lt;malelf/binary.h&gt;
-#include &lt;malelf/ehdr.h&gt;
-#include &lt;malelf/shdr.h&gt;
-#include &lt;malelf/phdr.h&gt;
-#include &lt;malelf/defines.h&gt;
 
+<pre><code>#include &lt;stdio.h>
+#include &lt;malelf/binary.h>
+#include &lt;malelf/ehdr.h>
+#include &lt;malelf/shdr.h>
+#include &lt;malelf/phdr.h>
+#include &lt;malelf/defines.h>
 
 int main()
 {
@@ -496,25 +500,25 @@ int main()
         UNUSED(result);
 
         /* Chamando o metodo init */
-        malelf_binary_init(&amp;binary);
+        malelf_binary_init(&binary);
 
         /* Alterando o alloc_type*/
-        malelf_binary_set_alloc_type(&amp;binary, MALELF_ALLOC_MALLOC);
+        malelf_binary_set_alloc_type(&binary, MALELF_ALLOC_MALLOC);
 
         /* Carregando o binario para a memoria */
-        malelf_binary_open("/bin/ls", &amp;binary);
+        malelf_binary_open("/bin/ls", &binary);
 
         /* Pegando as informacoes do ELF Header */
-        result = malelf_binary_get_ehdr(&amp;binary, &amp;ehdr);
-        result = malelf_ehdr_get_version(&amp;ehdr, &amp;me_version);
-        result = malelf_ehdr_get_type(&amp;ehdr, &amp;me_type);
-        result = malelf_ehdr_get_machine(&amp;ehdr, &amp;me_machine);
-        result = malelf_ehdr_get_ehsize(&amp;ehdr, &amp;size);
-        result = malelf_ehdr_get_phentsize(&amp;ehdr, &amp;phentsize);
-        result = malelf_ehdr_get_shentsize(&amp;ehdr, &amp;shentsize);
-        result = malelf_ehdr_get_shnum(&amp;ehdr, &amp;shnum);
-        result = malelf_ehdr_get_phnum(&amp;ehdr, &amp;phnum);
-        result = malelf_ehdr_get_shstrndx(&amp;ehdr, &amp;shstrndx);
+        result = malelf_binary_get_ehdr(&binary, &ehdr);
+        result = malelf_ehdr_get_version(&ehdr, &me_version);
+        result = malelf_ehdr_get_type(&ehdr, &me_type);
+        result = malelf_ehdr_get_machine(&ehdr, &me_machine);
+        result = malelf_ehdr_get_ehsize(&ehdr, &size);
+        result = malelf_ehdr_get_phentsize(&ehdr, &phentsize);
+        result = malelf_ehdr_get_shentsize(&ehdr, &shentsize);
+        result = malelf_ehdr_get_shnum(&ehdr, &shnum);
+        result = malelf_ehdr_get_phnum(&ehdr, &phnum);
+        result = malelf_ehdr_get_shstrndx(&ehdr, &shstrndx);
 
         printf("Version Name: %d\n", me_version.name);
         printf("Version Value: %d\n", me_version.value);
@@ -536,11 +540,12 @@ int main()
         printf("SHT index: %d\n", shstrndx);
 
         /* Liberando a memoria */
-        malelf_binary_close(&amp;binary);
+        malelf_binary_close(&binary);
 
         return 0;
 }
 </code></pre>
+
 
 <p>  Vamos explicar como funciona o exemplo abaixo:</p>
 
@@ -582,6 +587,8 @@ int main()
 </p>
 
 
+
+
 <pre><code>static _u32 _malelf_dissect_table_phdr()
 {
         MalelfTable table;
@@ -593,34 +600,35 @@ int main()
 
         char *headers[] = {"N", "Offset", NULL};
 
-        if (MALELF_SUCCESS != malelf_table_init(&amp;table, 60, 9, 2)) {
+        if (MALELF_SUCCESS != malelf_table_init(&table, 60, 9, 2)) {
                 return MALELF_ERROR;
         }
-        malelf_table_set_title(&amp;table, "Program Header Table (PHT)");
-        malelf_table_set_headers(&amp;table, headers);
+        malelf_table_set_title(&table, "Program Header Table (PHT)");
+        malelf_table_set_headers(&table, headers);
 
         /* Salvando o phdr */
-        malelf_binary_get_phdr(&amp;binary, &amp;phdr);
+        malelf_binary_get_phdr(&binary, &phdr);
 
         /* Salvando o ehdr */
-        malelf_binary_get_ehdr(&amp;binary, &amp;ehdr);
+        malelf_binary_get_ehdr(&binary, &ehdr);
 
         /* Pegando o campo e_phnum */
-        malelf_ehdr_get_phnum(&amp;ehdr, &amp;phnum);
+        malelf_ehdr_get_phnum(&ehdr, &phnum);
 
         /* Percorrendo os segmentos */
-        for (i = 0; i &lt; phnum; i++) {
-                malelf_table_add_value(&amp;table, (void *)i, MALELF_TABLE_INT);
-                malelf_phdr_get_offset(&amp;phdr, &amp;value, i);
-                malelf_table_add_value(&amp;table, (void *)value, MALELF_TABLE_HEX);
+        for (i = 0; i < phnum; i++) {
+                malelf_table_add_value(&table, (void *)i, MALELF_TABLE_INT);
+                malelf_phdr_get_offset(&phdr, &value, i);
+                malelf_table_add_value(&table, (void *)value, MALELF_TABLE_HEX);
         }
 
-        malelf_table_print(&amp;table);
-        malelf_table_finish(&amp;table);
+        malelf_table_print(&table);
+        malelf_table_finish(&table);
 
         return MALELF_SUCCESS;
 }
 </code></pre>
+
 
 <p><a id="sht"></a></p>
 
@@ -629,13 +637,15 @@ int main()
 <p style="text-align:justify"> Vamos a mais um exemplo. Agora vamos utilizar o módulo <b>shdr</b> para imprimir a informação do campo offset. Novamente, podem reparar que o processo é bem semelhante ao que já foi mostrado anteriormente. </p>
 
 
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;malelf/binary.h&gt;
-#include &lt;malelf/ehdr.h&gt;
-#include &lt;malelf/shdr.h&gt;
-#include &lt;malelf/phdr.h&gt;
-#include &lt;malelf/defines.h&gt;
 
+
+<pre><code class="C">
+#include &lt;stdio.h>
+#include &lt;malelf/binary.h>
+#include &lt;malelf/ehdr.h>
+#include &lt;malelf/shdr.h>
+#include &lt;malelf/phdr.h>
+#include &lt;malelf/defines.h>
 
 int main()
 {
@@ -650,26 +660,27 @@ int main()
 
         UNUSED(result);
 
-        malelf_binary_init(&amp;bin);
-        malelf_binary_set_alloc_type(&amp;bin, MALELF_ALLOC_MALLOC);
-        malelf_binary_open("/bin/ls", &amp;bin);
+        malelf_binary_init(&bin);
+        malelf_binary_set_alloc_type(&bin, MALELF_ALLOC_MALLOC);
+        malelf_binary_open("/bin/ls", &bin);
 
-        result = malelf_binary_get_ehdr(&amp;bin, &amp;ehdr);
-        result = malelf_binary_get_shdr(&amp;bin, &amp;shdr);
-        result = malelf_ehdr_get_shnum(&amp;ehdr, &amp;shnum);
+        result = malelf_binary_get_ehdr(&bin, &ehdr);
+        result = malelf_binary_get_shdr(&bin, &shdr);
+        result = malelf_ehdr_get_shnum(&ehdr, &shnum);
 
         printf("Number of Entries SHT: %d\n", shnum);
 
-        for (i = 0; i &lt; shnum; i++) {
-                malelf_shdr_get_offset(&amp;shdr, &amp;offset, i);
+        for (i = 0; i < shnum; i++) {
+                malelf_shdr_get_offset(&shdr, &offset, i);
                 printf("Offset: 0x%08x\n", offset);
         }
 
-        malelf_binary_close(&amp;bin);
+        malelf_binary_close(&bin);
 
         return 0;
 }
 </code></pre>
+
 
 <p><a id="moduloinfect"></a></p>
 
@@ -700,13 +711,15 @@ módulo chamado <b>report</b>. Com isso o programador pode enviar as informaçõ
 </p>
 
 
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;malelf/binary.h&gt;
-#include &lt;malelf/ehdr.h&gt;
-#include &lt;malelf/shdr.h&gt;
-#include &lt;malelf/phdr.h&gt;
-#include &lt;malelf/defines.h&gt;
-#include &lt;malelf/report.h&gt;
+
+
+<pre><code>#include &lt;stdio.h>
+#include &lt;malelf/binary.h>
+#include &lt;malelf/ehdr.h>
+#include &lt;malelf/shdr.h>
+#include &lt;malelf/phdr.h>
+#include &lt;malelf/defines.h>
+#include &lt;malelf/report.h>
 
 
 int main()
@@ -714,38 +727,40 @@ int main()
     MalelfBinary bin;
     MalelfReport report;
 
-    malelf_binary_init(&amp;bin);
-    malelf_binary_open("/bin/ls", &amp;bin);
-    malelf_report_open(&amp;report, "/tmp/report.xml", MALELF_OUTPUT_XML);
+    malelf_binary_init(&bin);
+    malelf_binary_open("/bin/ls", &bin);
+    malelf_report_open(&report, "/tmp/report.xml", MALELF_OUTPUT_XML);
 
-    malelf_report_ehdr(&amp;report, &amp;bin);
+    malelf_report_ehdr(&report, &bin);
 
-    malelf_report_close(&amp;report);
-    malelf_binary_close(&amp;bin);
+    malelf_report_close(&report);
+    malelf_binary_close(&bin);
 
     return 0;
 }
 </code></pre>
 
+
 <p>  Agora vamos ver como ficou a saída.</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF8"?&gt;
-&lt;MalelfBinary&gt;
- &lt;MalelfEhdr&gt;
-  &lt;type&gt;2&lt;/type&gt;
-  &lt;machine&gt;3&lt;/machine&gt;
-  &lt;version&gt;1&lt;/version&gt;
-  &lt;entry&gt;0x0804c070&lt;/entry&gt;
-  &lt;phoff&gt;0x00000034&lt;/phoff&gt;
-  &lt;shoff&gt;0x0001a444&lt;/shoff&gt;
-  &lt;flags&gt;0&lt;/flags&gt;
-  &lt;phentsize&gt;32&lt;/phentsize&gt;
-  &lt;phnum&gt;9&lt;/phnum&gt;
-  &lt;shentsize&gt;40&lt;/shentsize&gt;
-  &lt;shnum&gt;28&lt;/shnum&gt;
-  &lt;shstrndx&gt;27&lt;/shstrndx&gt;
- &lt;/MalelfEhdr&gt;
+<pre><code>&lt;?xml version="1.0" encoding="UTF8"?>
+&lt;MalelfBinary>
+ &lt;MalelfEhdr>
+  &lt;type>2&lt;/type>
+  &lt;machine>3&lt;/machine>
+  &lt;version>1&lt;/version>
+  &lt;entry>0x0804c070&lt;/entry>
+  &lt;phoff>0x00000034&lt;/phoff>
+  &lt;shoff>0x0001a444&lt;/shoff>
+  &lt;flags>0&lt;/flags>
+  &lt;phentsize>32&lt;/phentsize>
+  &lt;phnum>9&lt;/phnum>
+  &lt;shentsize>40&lt;/shentsize>
+  &lt;shnum>28&lt;/shnum>
+  &lt;shstrndx>27&lt;/shstrndx>
+ &lt;/MalelfEhdr>
 </code></pre>
+
 
 <p><a id="stdout"></a></p>
 
@@ -770,13 +785,15 @@ int main()
 </p>
 
 
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;malelf/binary.h&gt;
-#include &lt;malelf/ehdr.h&gt;
-#include &lt;malelf/shdr.h&gt;
-#include &lt;malelf/phdr.h&gt;
-#include &lt;malelf/table.h&gt;
-#include &lt;malelf/error.h&gt;
+
+
+<pre><code>#include &lt;stdio.h>
+#include &lt;malelf/binary.h>
+#include &lt;malelf/ehdr.h>
+#include &lt;malelf/shdr.h>
+#include &lt;malelf/phdr.h>
+#include &lt;malelf/table.h>
+#include &lt;malelf/error.h>
 
 int main()
 {
@@ -785,55 +802,56 @@ int main()
         MalelfEhdr ehdr;
         _u32 value;
 
-        malelf_binary_init(&amp;bin);
-        malelf_binary_open("/bin/ls", &amp;bin);
+        malelf_binary_init(&bin);
+        malelf_binary_open("/bin/ls", &bin);
         char *headers[] = {"Structure Member", "Description", "Value", NULL};
 
         /* Parameters: MalelfTable, width, rows, columns */
-        if (MALELF_SUCCESS != malelf_table_init(&amp;table, 78, 3, 3)) {
+        if (MALELF_SUCCESS != malelf_table_init(&table, 78, 3, 3)) {
                 return MALELF_ERROR;
         }
 
         /* Configurando o titulo da tabela */
-        malelf_table_set_title(&amp;table, "ELF Header");
+        malelf_table_set_title(&table, "ELF Header");
 
         /* Salvando os headers */
-        malelf_table_set_headers(&amp;table, headers);
+        malelf_table_set_headers(&table, headers);
 
-        malelf_binary_get_ehdr(&amp;bin, &amp;ehdr);
+        malelf_binary_get_ehdr(&bin, &ehdr);
 
         /*  1 - Row */
         MalelfEhdrTable me_type;
-        malelf_ehdr_get_type(&amp;ehdr, &amp;me_type);
-        malelf_table_add_value(&amp;table, (void*)"e_type", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table, (void*)"Object Type", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table,
+        malelf_ehdr_get_type(&ehdr, &me_type);
+        malelf_table_add_value(&table, (void*)"e_type", MALELF_TABLE_STR);
+        malelf_table_add_value(&table, (void*)"Object Type", MALELF_TABLE_STR);
+        malelf_table_add_value(&table,
                                (void*)me_type.meaning,
                                MALELF_TABLE_STR);
 
         /*  2 - Row */
         MalelfEhdrTable me_version;
-        malelf_ehdr_get_version(&amp;ehdr, &amp;me_version);
-        malelf_table_add_value(&amp;table, (void*)"e_version", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table, (void*)"Version", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table,
+        malelf_ehdr_get_version(&ehdr, &me_version);
+        malelf_table_add_value(&table, (void*)"e_version", MALELF_TABLE_STR);
+        malelf_table_add_value(&table, (void*)"Version", MALELF_TABLE_STR);
+        malelf_table_add_value(&table,
                                (void*)me_version.value,
                                MALELF_TABLE_INT);
 
         /*  3 - Row */
-        malelf_ehdr_get_entry(&amp;ehdr, &amp;value);
-        malelf_table_add_value(&amp;table, (void*)"e_entry", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table, (void*)"Entry Point", MALELF_TABLE_STR);
-        malelf_table_add_value(&amp;table, (void*)value, MALELF_TABLE_HEX);
+        malelf_ehdr_get_entry(&ehdr, &value);
+        malelf_table_add_value(&table, (void*)"e_entry", MALELF_TABLE_STR);
+        malelf_table_add_value(&table, (void*)"Entry Point", MALELF_TABLE_STR);
+        malelf_table_add_value(&table, (void*)value, MALELF_TABLE_HEX);
 
-        malelf_table_print(&amp;table);
+        malelf_table_print(&table);
 
-        malelf_table_finish(&amp;table);
-        malelf_binary_close(&amp;bin);
+        malelf_table_finish(&table);
+        malelf_binary_close(&bin);
 
         return 0;
 }
 </code></pre>
+
 
 <p>  E essa é a saída do nosso programa. =)</p>
 
@@ -904,7 +922,7 @@ Antes de tudo, vamos ver o help do módulo dissect.</p>
 
 <p>This command display information about the ELF binary.</p>
 
-<pre><code>Usage: malelf dissect &lt;options&gt;
+<pre><code>Usage: malelf dissect <options>
          -h, --help     Dissect Help
          -i, --input    Binary File
          -e, --ehdr     Display ELF Header
@@ -916,6 +934,7 @@ Antes de tudo, vamos ver o help do módulo dissect.</p>
 
 Example: malelf dissect -i /bin/ls -f xml -o /tmp/binary.xml
 </code></pre>
+
 
 <p>  Mostrando o ELF Header na shell:</p>
 
