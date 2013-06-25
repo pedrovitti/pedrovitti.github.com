@@ -148,7 +148,7 @@ libmalelf/
 
 <p style="text-align:justify"> O módulo binary é constituido por dois arquivos: <b>binary.c</b> e <b>binary.h</b>. Podemos dizer que este é o principal módulo da biblioteca, pois ele é o responsável por armazenar todas as informações do binário. Abaixo segue como ele está definido dentro da biblioteca. </p>
 
-```
+<pre><code>
 typedef struct {
         char *fname;         /* Binary filename */
         char *bkpfile;       /* Filename of backup'ed file in case of
@@ -161,9 +161,8 @@ typedef struct {
         MalelfShdr shdr;     /* Elf Section Headers */
         _u8 alloc_type;      /* System function used to allocate memory */
         _u32 class;          /* Binary arch */
-
 } MalelfBinary;
-```
+</pre></code>
 
 - **fname:** Nome do binário que iremos trabalhar. Exemplo: **/bin/ls.**;
 - **bkpfile:** Backup file;
@@ -184,10 +183,10 @@ alguns métodos básicos.
 <p style="text-align:justify">O método <b>malelf_binary_init()</b> deve ser chamado antes de utilizar qualquer outra função da biblioteca. Esse método é responsável por inicializar as informações do objeto MalelfBinary.</p>
 <p style="text-align:justify"> Para carregar/abrir um binário, existe o método <b>malelf_binary_open()</b>, que por default utiliza a função <b>mmap()</b> para carregar o binário na memória. Caso o programador deseje utilizar o <b>malloc()</b>, existe uma função chamada <b>malelf_binary_set_alloc_type()</b> que pode ser usada passando o parâmetro <b>MALELF_ALLOC_MALLOC</b>, como no exemplo abaixo.</p>
 
-```
+<pre><code>
   MalelfBinary bin;
   malelf_binary_set_alloc_type(bin, MALELF_ALLOC_MALLOC);
-```
+</pre></code>
 
 <p style="text-align:justify">E, por último, mas não menos importante, o programador deve chamar o método <b>malelf_binary_close()</b> passando o objeto MalelfBinary como parâmetro. </p>
 
@@ -200,7 +199,7 @@ até porque o projeto ainda está em desenvolvimento. Demonstramos alguns códig
   Para iniciarmos os exemplos, vamos começar com o maior clichê do mundo da
 programação.
 
-```
+<pre> <code>
 #include <stdio.h>
 #include <malelf/binary.h>
 
@@ -214,7 +213,7 @@ int main()
 
     return 0;
 }
-```
+</pre></code>
 
   Agora vamos compilar o nosso exemplo acima.
 
