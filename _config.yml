@@ -1,8 +1,8 @@
-title: "malelficus"
+title: "pedrovitti"
 #url: "patito.github.com"
-author: "malelficus project"
-email: "maleficus@gmail.com"
-description: "Documentation of malelficus project."
+author: "Pedro Vitti"
+email: "pedrovitti@gmail.com"
+description: "Pedro Vitti personal website."
 
 source: .
 permalink: /:year/:month/:title
