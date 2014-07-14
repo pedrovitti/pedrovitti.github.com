@@ -1,9 +1,8 @@
 title: "pedrovitti"
-#url: "patito.github.com"
 author: "Pedro Vitti"
 email: "pedrovitti@gmail.com"
 description: "Pedro Vitti personal website."
-
+url: .
 source: .
 permalink: /:year/:month/:title
 

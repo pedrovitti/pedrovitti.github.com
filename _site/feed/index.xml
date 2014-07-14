@@ -4,13 +4,22 @@
  <title>TJ Stein</title>
  <link href="http://tjstein.com/feed/" rel="self"/>
  <link href="http://tjstein.com/"/>
- <updated>2014-04-04T01:17:24-03:00</updated>
+ <updated>2014-06-22T22:25:25-03:00</updated>
  <id>http://tjstein.com/</id>
  <author>
    <name>TJ Stein</name>
    <email>thomasjstein@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Starting blog</title>
+   <link href="http://tjstein.com/2014/04/starting-blog2"/>
+   <updated>2014-04-04T00:00:00-03:00</updated>
+   <id>http://tjstein.com/2014/04/starting-blog2</id>
+   <content type="html">
+</content>
+ </entry>
  
  <entry>
    <title>Starting blog</title>
